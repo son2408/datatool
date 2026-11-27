@@ -109,6 +109,7 @@
                         ToolTip="Mở thư mục chứa file log"
                         Height="28" Padding="8,0" Margin="0,0,4,0"
                         Foreground="{StaticResource DT.Brush.LogMuted}"
+                        Cursor="Hand"
                         Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="FolderOpenOutline" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />

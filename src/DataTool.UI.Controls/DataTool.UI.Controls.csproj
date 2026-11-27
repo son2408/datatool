@@ -3,7 +3,7 @@
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
     <RootNamespace>DataTool.UI.Controls</RootNamespace>
-    <Description>Các control WPF dùng lại: LogViewer, ProgressPanel, EnvironmentBadge, ConnectionStatusIndicator, ConfirmDialog.</Description>
+    <Description>Các control WPF dùng lại: FormField, SectionCard, PathBox, SwitchField, LogViewer, ProgressPanel, EnvironmentBadge, ConfirmDialog, InputDialog.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />

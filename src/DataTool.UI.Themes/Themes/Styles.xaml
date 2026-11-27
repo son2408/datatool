@@ -57,6 +57,7 @@
 
     <!-- Nút -->
     <Style x:Key="DT.Button.Primary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Height" Value="36" />
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6" />
@@ -67,18 +68,52 @@
         <Setter Property="Foreground" Value="White" />
     </Style>
     <Style x:Key="DT.Button.Secondary" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Height" Value="36" />
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6" />
     </Style>
     <Style x:Key="DT.Button.Text" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="10,0" />
     </Style>
     <Style x:Key="DT.Button.Icon" TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Width" Value="32" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="4" />
+    </Style>
+
+    <!-- Con trỏ bàn tay cho mọi thành phần bấm được (style ngầm định, kế thừa style Material Design) -->
+    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style x:Key="DT.Switch.Small" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="LayoutTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="0.75" ScaleY="0.75" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Ô nhập liệu trong form -->
@@ -93,6 +128,7 @@
         <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.85" />
     </Style>
     <Style x:Key="DT.Field.ComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Margin" Value="0,0,0,14" />
         <Setter Property="Padding" Value="12,10" />
         <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.85" />

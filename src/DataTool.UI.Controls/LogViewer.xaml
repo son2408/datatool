@@ -20,6 +20,7 @@
                                 ToolTip="Sao chép log (dòng đang chọn, hoặc toàn bộ)"
                                 Width="30" Height="30" Padding="4"
                                 Foreground="{DynamicResource DT.Brush.LogMuted}"
+                                Cursor="Hand"
                                 Style="{DynamicResource MaterialDesignIconButton}">
                             <materialDesign:PackIcon Kind="ContentCopy" Width="16" Height="16" />
                         </Button>
@@ -28,6 +29,7 @@
                                 ToolTip="Xoá nội dung khung log"
                                 Width="30" Height="30" Padding="4"
                                 Foreground="{DynamicResource DT.Brush.LogMuted}"
+                                Cursor="Hand"
                                 Style="{DynamicResource MaterialDesignIconButton}">
                             <materialDesign:PackIcon Kind="DeleteSweepOutline" Width="16" Height="16" />
                         </Button>
