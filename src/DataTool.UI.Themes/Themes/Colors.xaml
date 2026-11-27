@@ -1,0 +1,66 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Bảng màu chính -->
+    <Color x:Key="DT.Color.Primary">#3F51B5</Color>
+    <Color x:Key="DT.Color.PrimaryDark">#303F9F</Color>
+    <Color x:Key="DT.Color.PrimaryLight">#E8EAF6</Color>
+    <Color x:Key="DT.Color.Background">#F4F6FA</Color>
+    <Color x:Key="DT.Color.Surface">#FFFFFF</Color>
+    <Color x:Key="DT.Color.Border">#E3E7EE</Color>
+    <Color x:Key="DT.Color.TextPrimary">#1F2430</Color>
+    <Color x:Key="DT.Color.TextSecondary">#5F6B7A</Color>
+
+    <!-- Màu trạng thái -->
+    <Color x:Key="DT.Color.Success">#2E7D32</Color>
+    <Color x:Key="DT.Color.SuccessLight">#E8F5E9</Color>
+    <Color x:Key="DT.Color.Warning">#EF6C00</Color>
+    <Color x:Key="DT.Color.WarningLight">#FFF3E0</Color>
+    <Color x:Key="DT.Color.Danger">#C62828</Color>
+    <Color x:Key="DT.Color.DangerLight">#FDECEA</Color>
+    <Color x:Key="DT.Color.Info">#1565C0</Color>
+
+    <!-- Khung log (nền tối kiểu console) -->
+    <Color x:Key="DT.Color.LogBackground">#1E2028</Color>
+    <Color x:Key="DT.Color.LogHeader">#262935</Color>
+    <Color x:Key="DT.Color.LogText">#D6DAE1</Color>
+    <Color x:Key="DT.Color.LogMuted">#7D8590</Color>
+    <Color x:Key="DT.Color.LogSuccess">#81C784</Color>
+    <Color x:Key="DT.Color.LogWarning">#FFB74D</Color>
+    <Color x:Key="DT.Color.LogError">#EF5350</Color>
+    <Color x:Key="DT.Color.LogSelection">#33384A</Color>
+
+    <SolidColorBrush x:Key="DT.Brush.Primary" Color="{StaticResource DT.Color.Primary}" />
+    <SolidColorBrush x:Key="DT.Brush.PrimaryDark" Color="{StaticResource DT.Color.PrimaryDark}" />
+    <SolidColorBrush x:Key="DT.Brush.PrimaryLight" Color="{StaticResource DT.Color.PrimaryLight}" />
+    <SolidColorBrush x:Key="DT.Brush.Background" Color="{StaticResource DT.Color.Background}" />
+    <SolidColorBrush x:Key="DT.Brush.Surface" Color="{StaticResource DT.Color.Surface}" />
+    <SolidColorBrush x:Key="DT.Brush.Border" Color="{StaticResource DT.Color.Border}" />
+    <SolidColorBrush x:Key="DT.Brush.TextPrimary" Color="{StaticResource DT.Color.TextPrimary}" />
+    <SolidColorBrush x:Key="DT.Brush.TextSecondary" Color="{StaticResource DT.Color.TextSecondary}" />
+    <SolidColorBrush x:Key="DT.Brush.Success" Color="{StaticResource DT.Color.Success}" />
+    <SolidColorBrush x:Key="DT.Brush.SuccessLight" Color="{StaticResource DT.Color.SuccessLight}" />
+    <SolidColorBrush x:Key="DT.Brush.Warning" Color="{StaticResource DT.Color.Warning}" />
+    <SolidColorBrush x:Key="DT.Brush.WarningLight" Color="{StaticResource DT.Color.WarningLight}" />
+    <SolidColorBrush x:Key="DT.Brush.Danger" Color="{StaticResource DT.Color.Danger}" />
+    <SolidColorBrush x:Key="DT.Brush.DangerLight" Color="{StaticResource DT.Color.DangerLight}" />
+    <SolidColorBrush x:Key="DT.Brush.Info" Color="{StaticResource DT.Color.Info}" />
+
+    <SolidColorBrush x:Key="DT.Brush.LogBackground" Color="{StaticResource DT.Color.LogBackground}" />
+    <SolidColorBrush x:Key="DT.Brush.LogHeader" Color="{StaticResource DT.Color.LogHeader}" />
+    <SolidColorBrush x:Key="DT.Brush.LogText" Color="{StaticResource DT.Color.LogText}" />
+    <SolidColorBrush x:Key="DT.Brush.LogMuted" Color="{StaticResource DT.Color.LogMuted}" />
+    <SolidColorBrush x:Key="DT.Brush.LogSuccess" Color="{StaticResource DT.Color.LogSuccess}" />
+    <SolidColorBrush x:Key="DT.Brush.LogWarning" Color="{StaticResource DT.Color.LogWarning}" />
+    <SolidColorBrush x:Key="DT.Brush.LogError" Color="{StaticResource DT.Color.LogError}" />
+    <SolidColorBrush x:Key="DT.Brush.LogSelection" Color="{StaticResource DT.Color.LogSelection}" />
+
+    <!-- Màu theo môi trường: Dev xanh lá, Test cam, Production đỏ, khác xám -->
+    <SolidColorBrush x:Key="DT.Brush.Env.Development" Color="#2E7D32" />
+    <SolidColorBrush x:Key="DT.Brush.Env.Test" Color="#EF6C00" />
+    <SolidColorBrush x:Key="DT.Brush.Env.Production" Color="#C62828" />
+    <SolidColorBrush x:Key="DT.Brush.Env.Other" Color="#546E7A" />
+
+    <FontFamily x:Key="DT.Font.Ui">Segoe UI</FontFamily>
+    <FontFamily x:Key="DT.Font.Mono">Consolas, Courier New</FontFamily>
+</ResourceDictionary>

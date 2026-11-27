@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>DataTool.UI.Controls</RootNamespace>
+    <Description>Các control WPF dùng lại: LogViewer, ProgressPanel, EnvironmentBadge, ConnectionStatusIndicator, ConfirmDialog.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataTool.UI.Themes\DataTool.UI.Themes.csproj" />
+  </ItemGroup>
+</Project>

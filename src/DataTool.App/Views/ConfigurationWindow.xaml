@@ -1,0 +1,297 @@
+<Window x:Class="DataTool.App.Views.ConfigurationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:DataTool.UI.Controls;assembly=DataTool.UI.Controls"
+        xmlns:helpers="clr-namespace:DataTool.UI.Controls.Helpers;assembly=DataTool.UI.Controls"
+        Title="Quản lý cấu hình"
+        Width="1040" Height="720"
+        MinWidth="860" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Style="{StaticResource DT.Window}">
+
+    <Window.Resources>
+        <!-- Tiêu đề mỗi nhóm cấu hình: biểu tượng + tên + nút kiểm tra kết nối + kết quả -->
+        <Style x:Key="SectionIcon" TargetType="materialDesign:PackIcon">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource DT.Brush.Primary}" />
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- ===== Thanh nút dưới cùng ===== -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{StaticResource DT.Brush.Surface}"
+                BorderBrush="{StaticResource DT.Brush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,12">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Content="Huỷ"
+                            MinWidth="90"
+                            Margin="0,0,10,0"
+                            IsCancel="True"
+                            Style="{StaticResource DT.Button.Secondary}" />
+                    <Button MinWidth="110"
+                            Command="{Binding SaveCommand}"
+                            Style="{StaticResource DT.Button.Primary}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSaveOutline" Width="18" Height="18" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Lưu" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="ShieldLockOutline" Width="16" Height="16"
+                                             Foreground="{StaticResource DT.Brush.TextSecondary}"
+                                             VerticalAlignment="Center" />
+                    <TextBlock Margin="6,0,0,0"
+                               Style="{StaticResource DT.Text.Caption}"
+                               VerticalAlignment="Center"
+                               Text="{Binding ConfigFilePath, StringFormat='Mật khẩu được mã hoá khi lưu vào {0}'}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="270" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ===== Danh sách bộ cấu hình ===== -->
+            <Border Grid.Column="0"
+                    Background="{StaticResource DT.Brush.Surface}"
+                    BorderBrush="{StaticResource DT.Brush.Border}"
+                    BorderThickness="0,0,1,0">
+                <DockPanel Margin="12,16,12,12">
+                    <DockPanel DockPanel.Dock="Top" Margin="8,0,0,8">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Command="{Binding AddCommand}" ToolTip="Thêm cấu hình" Style="{StaticResource DT.Button.Icon}">
+                                <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" />
+                            </Button>
+                            <Button Command="{Binding DuplicateCommand}" ToolTip="Nhân bản cấu hình đang chọn" Style="{StaticResource DT.Button.Icon}">
+                                <materialDesign:PackIcon Kind="ContentDuplicate" Width="18" Height="18" />
+                            </Button>
+                            <Button Command="{Binding DeleteCommand}" ToolTip="Xoá cấu hình đang chọn" Style="{StaticResource DT.Button.Icon}"
+                                    Foreground="{StaticResource DT.Brush.Danger}">
+                                <materialDesign:PackIcon Kind="DeleteOutline" Width="18" Height="18" />
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Text="BỘ CẤU HÌNH" Style="{StaticResource DT.Text.Overline}" VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <ListBox ItemsSource="{Binding Profiles}"
+                             SelectedItem="{Binding SelectedProfile}"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Ellipse Width="10" Height="10" VerticalAlignment="Center"
+                                             Fill="{Binding Level, Converter={StaticResource EnvironmentBrush}}" />
+                                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Level}" Style="{StaticResource DT.Text.Caption}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <!-- ===== Form chi tiết ===== -->
+            <TextBlock Grid.Column="1"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Style="{StaticResource DT.Text.Caption}"
+                       Text="Chưa có bộ cấu hình nào. Bấm + để thêm."
+                       Visibility="{Binding HasSelection, Converter={StaticResource InverseBoolToVisibility}}" />
+
+            <ScrollViewer Grid.Column="1"
+                          VerticalScrollBarVisibility="Auto"
+                          DataContext="{Binding SelectedProfile}"
+                          Visibility="{Binding Converter={StaticResource NullToVisibility}}">
+                <StackPanel Margin="28,22,28,24" MaxWidth="760" HorizontalAlignment="Stretch">
+
+                    <!-- Thông tin chung -->
+                    <DockPanel Margin="0,0,0,16">
+                        <controls:EnvironmentBadge DockPanel.Dock="Right"
+                                                   EnvironmentName="{Binding Name}"
+                                                   Level="{Binding Level}" />
+                        <TextBlock Text="{Binding Name}" Style="{StaticResource DT.Text.PageTitle}" TextTrimming="CharacterEllipsis" />
+                    </DockPanel>
+
+                    <Border Style="{StaticResource DT.Card}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                <materialDesign:PackIcon Kind="TuneVariant" Style="{StaticResource SectionIcon}" />
+                                <TextBlock Margin="10,0,0,0" Text="Thông tin chung" Style="{StaticResource DT.Text.SectionTitle}" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Tên cấu hình"
+                                         Style="{StaticResource DT.Field.TextBox}" />
+                                <ComboBox Grid.Column="2"
+                                          ItemsSource="{Binding DataContext.Levels, RelativeSource={RelativeSource AncestorType=Window}}"
+                                          SelectedItem="{Binding Level}"
+                                          materialDesign:HintAssist.Hint="Loại môi trường"
+                                          Style="{StaticResource DT.Field.ComboBox}" />
+                            </Grid>
+                            <Border Padding="12,8" CornerRadius="6"
+                                    Background="{StaticResource DT.Brush.DangerLight}"
+                                    Visibility="{Binding IsProduction, Converter={StaticResource BoolToVisibility}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="AlertOutline" Foreground="{StaticResource DT.Brush.Danger}" VerticalAlignment="Center" />
+                                    <TextBlock Margin="8,0,0,0" TextWrapping="Wrap" Foreground="{StaticResource DT.Brush.Danger}"
+                                               Text="Môi trường Production: tác vụ xoá sẽ yêu cầu gõ lại tên cấu hình để xác nhận." />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- CSDL Oracle -->
+                    <Border Style="{StaticResource DT.Card}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,16">
+                                <Button DockPanel.Dock="Right"
+                                        Command="{Binding DatabaseTest.TestCommand}"
+                                        Style="{StaticResource DT.Button.Secondary}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="LanConnect" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Kiểm tra kết nối" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="DatabaseOutline" Style="{StaticResource SectionIcon}" />
+                                    <TextBlock Margin="10,0,0,0" Text="Cơ sở dữ liệu (Oracle)" Style="{StaticResource DT.Text.SectionTitle}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DockPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding DbHost, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Host" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding DbPort, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Port" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding DbServiceName, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Service name / SID" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding DbUserName, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Tài khoản" Style="{StaticResource DT.Field.TextBox}" />
+                                <PasswordBox Grid.Row="2" Grid.Column="2"
+                                             helpers:PasswordBoxHelper.BoundPassword="{Binding DbPassword}"
+                                             materialDesign:HintAssist.Hint="Mật khẩu" Style="{StaticResource DT.Field.PasswordBox}" />
+                            </Grid>
+                            <controls:ConnectionStatusIndicator State="{Binding DatabaseTest.State}" Message="{Binding DatabaseTest.Message}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- SOLR -->
+                    <Border Style="{StaticResource DT.Card}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,16">
+                                <Button DockPanel.Dock="Right"
+                                        Command="{Binding SolrTest.TestCommand}"
+                                        Style="{StaticResource DT.Button.Secondary}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="LanConnect" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Kiểm tra kết nối" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="TextBoxSearchOutline" Style="{StaticResource SectionIcon}" />
+                                    <TextBlock Margin="10,0,0,0" Text="SOLR" Style="{StaticResource DT.Text.SectionTitle}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DockPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding SolrUrl, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="URL (ví dụ http://host:8983/solr)" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SolrCore, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Core / Collection" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding SolrUserName, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Tài khoản (nếu có)" Style="{StaticResource DT.Field.TextBox}" />
+                                <PasswordBox Grid.Row="1" Grid.Column="2"
+                                             helpers:PasswordBoxHelper.BoundPassword="{Binding SolrPassword}"
+                                             materialDesign:HintAssist.Hint="Mật khẩu" Style="{StaticResource DT.Field.PasswordBox}" />
+                            </Grid>
+                            <controls:ConnectionStatusIndicator State="{Binding SolrTest.State}" Message="{Binding SolrTest.Message}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- RabbitMQ -->
+                    <Border Style="{StaticResource DT.Card}">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,16">
+                                <Button DockPanel.Dock="Right"
+                                        Command="{Binding RabbitMqTest.TestCommand}"
+                                        Style="{StaticResource DT.Button.Secondary}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="LanConnect" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="Kiểm tra kết nối" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Rabbit" Style="{StaticResource SectionIcon}" />
+                                    <TextBlock Margin="10,0,0,0" Text="RabbitMQ" Style="{StaticResource DT.Text.SectionTitle}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DockPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding MqHost, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Host" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding MqPort, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Port" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding MqVirtualHost, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Virtual host" Style="{StaticResource DT.Field.TextBox}" />
+                                <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding MqUserName, UpdateSourceTrigger=PropertyChanged}"
+                                         materialDesign:HintAssist.Hint="Tài khoản" Style="{StaticResource DT.Field.TextBox}" />
+                                <PasswordBox Grid.Row="2" Grid.Column="2"
+                                             helpers:PasswordBoxHelper.BoundPassword="{Binding MqPassword}"
+                                             materialDesign:HintAssist.Hint="Mật khẩu" Style="{StaticResource DT.Field.PasswordBox}" />
+                            </Grid>
+                            <controls:ConnectionStatusIndicator State="{Binding RabbitMqTest.State}" Message="{Binding RabbitMqTest.Message}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>

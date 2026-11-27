@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>DataTool.App</RootNamespace>
+    <AssemblyName>DataTool</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataTool.UI.Themes\DataTool.UI.Themes.csproj" />
+    <ProjectReference Include="..\DataTool.UI.Controls\DataTool.UI.Controls.csproj" />
+  </ItemGroup>
+</Project>
