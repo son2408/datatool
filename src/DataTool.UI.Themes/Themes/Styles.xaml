@@ -104,6 +104,16 @@
     <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
         <Setter Property="Cursor" Value="Hand" />
     </Style>
+    <!-- Đặt trên cả danh sách vì một số style Material tự gán ItemContainerStyle riêng -->
+    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
         <Setter Property="Cursor" Value="Hand" />
     </Style>
