@@ -55,7 +55,8 @@
     <SolidColorBrush x:Key="DT.Brush.LogError" Color="{StaticResource DT.Color.LogError}" />
     <SolidColorBrush x:Key="DT.Brush.LogSelection" Color="{StaticResource DT.Color.LogSelection}" />
 
-    <!-- Màu theo môi trường: Dev xanh lá, Test cam, Production đỏ, khác xám -->
+    <!-- Màu theo môi trường: Default màu chính, Dev xanh lá, Test cam, Production đỏ, khác xám -->
+    <SolidColorBrush x:Key="DT.Brush.Env.Default" Color="#3F51B5" />
     <SolidColorBrush x:Key="DT.Brush.Env.Development" Color="#2E7D32" />
     <SolidColorBrush x:Key="DT.Brush.Env.Test" Color="#EF6C00" />
     <SolidColorBrush x:Key="DT.Brush.Env.Production" Color="#C62828" />

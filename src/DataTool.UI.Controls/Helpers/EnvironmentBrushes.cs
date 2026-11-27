@@ -20,6 +20,7 @@ namespace DataTool.UI.Controls.Helpers
                 case EnvironmentLevel.Development: return Frozen(Color.FromRgb(0x2E, 0x7D, 0x32));
                 case EnvironmentLevel.Test: return Frozen(Color.FromRgb(0xEF, 0x6C, 0x00));
                 case EnvironmentLevel.Production: return Frozen(Color.FromRgb(0xC6, 0x28, 0x28));
+                case EnvironmentLevel.Default: return Frozen(Color.FromRgb(0x3F, 0x51, 0xB5));
                 default: return Frozen(Color.FromRgb(0x54, 0x6E, 0x7A));
             }
         }

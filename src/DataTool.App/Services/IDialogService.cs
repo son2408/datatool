@@ -13,9 +13,16 @@ namespace DataTool.App.Services
         void ShowInfo(string title, string message);
         void ShowError(string title, string message);
 
-        /// <summary>Mở cửa sổ quản lý cấu hình. Trả về true nếu người dùng đã lưu.</summary>
-        bool ShowConfiguration(ConfigurationViewModel viewModel);
+        /// <summary>Hỏi một dòng chữ; trả về null nếu huỷ. validate trả về thông báo lỗi hoặc null.</summary>
+        string Prompt(string title, string message, string defaultValue = "", System.Func<string, string> validate = null);
+
+        /// <summary>Chọn thư mục; trả về null nếu huỷ.</summary>
+        string PickFolder(string title, string initialFolder);
+
+        /// <summary>Mở cửa sổ cấu hình tỉnh (chặn đến khi đóng).</summary>
+        void ShowConfiguration(ConfigurationViewModel viewModel);
 
         void OpenFolder(string path);
+        void OpenFile(string path);
     }
 }

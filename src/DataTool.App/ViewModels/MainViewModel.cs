@@ -6,49 +6,51 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataTool.App.Models;
 using DataTool.App.Services;
+using DataTool.Core.Provinces;
 
 namespace DataTool.App.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly IProfileStore _profileStore;
-        private readonly IConnectionTester _connectionTester;
+        private readonly ProvinceCatalog _catalog;
         private readonly IDialogService _dialogs;
         private readonly List<TaskRunViewModel> _runViewModels = new List<TaskRunViewModel>();
 
-        private EnvironmentProfile _selectedEnvironment;
+        private ProvinceProfile _selectedProvince;
         private MenuNodeViewModel _selectedNode;
         private string _menuFilter = string.Empty;
         private bool _isBusy;
+        private bool _reloading;
 
-        public MainViewModel(IProfileStore profileStore, IConnectionTester connectionTester,
-            IDialogService dialogs, IEnumerable<TaskDescriptor> tasks)
+        public MainViewModel(ProvinceCatalog catalog, IDialogService dialogs, IEnumerable<TaskDescriptor> tasks)
         {
-            _profileStore = profileStore;
-            _connectionTester = connectionTester;
+            _catalog = catalog;
             _dialogs = dialogs;
 
             foreach (var node in MenuNodeViewModel.BuildTree(tasks, CreateRunViewModel))
                 Menu.Add(node);
 
             OpenConfigurationCommand = new RelayCommand(OpenConfiguration, () => !IsBusy);
-            ReloadEnvironments(null);
+            ReloadProvinces();
         }
 
-        public ObservableCollection<EnvironmentProfile> Environments { get; } = new ObservableCollection<EnvironmentProfile>();
+        public ObservableCollection<ProvinceProfile> Provinces { get; } = new ObservableCollection<ProvinceProfile>();
         public ObservableCollection<MenuNodeViewModel> Menu { get; } = new ObservableCollection<MenuNodeViewModel>();
 
-        public EnvironmentProfile SelectedEnvironment
+        /// <summary>Tỉnh đang dùng (chỉ một). Đổi ở đây cũng lưu vào thiết lập.</summary>
+        public ProvinceProfile SelectedProvince
         {
-            get => _selectedEnvironment;
+            get => _selectedProvince;
             set
             {
-                if (SetProperty(ref _selectedEnvironment, value))
-                    OnPropertyChanged(nameof(IsProduction));
+                if (!SetProperty(ref _selectedProvince, value)) return;
+                OnPropertyChanged(nameof(HasProvince));
+                if (!_reloading && value != null)
+                    _catalog.SetActive(value.Id);
             }
         }
 
-        public bool IsProduction => SelectedEnvironment?.IsProduction == true;
+        public bool HasProvince => SelectedProvince != null;
 
         public MenuNodeViewModel SelectedNode
         {
@@ -73,20 +75,20 @@ namespace DataTool.App.ViewModels
             }
         }
 
-        /// <summary>Có tác vụ đang chạy: khoá đổi môi trường và sửa cấu hình.</summary>
+        /// <summary>Có tác vụ đang chạy: khoá đổi tỉnh và sửa cấu hình.</summary>
         public bool IsBusy
         {
             get => _isBusy;
             private set
             {
                 if (!SetProperty(ref _isBusy, value)) return;
-                OnPropertyChanged(nameof(CanChangeEnvironment));
+                OnPropertyChanged(nameof(CanChangeProvince));
                 OnPropertyChanged(nameof(StatusMessage));
                 OpenConfigurationCommand.NotifyCanExecuteChanged();
             }
         }
 
-        public bool CanChangeEnvironment => !IsBusy;
+        public bool CanChangeProvince => !IsBusy;
 
         public string StatusMessage
         {
@@ -97,13 +99,13 @@ namespace DataTool.App.ViewModels
             }
         }
 
-        public string DataFolder => AppPaths.DataFolder;
+        public string ConfigFolder => _catalog.Folder;
 
         public RelayCommand OpenConfigurationCommand { get; }
 
         private TaskRunViewModel CreateRunViewModel(TaskDescriptor task)
         {
-            var vm = new TaskRunViewModel(task, () => SelectedEnvironment, _dialogs);
+            var vm = new TaskRunViewModel(task, () => SelectedProvince, _dialogs);
             vm.RunningChanged += (s, e) =>
             {
                 IsBusy = _runViewModels.Any(r => r.IsRunning);
@@ -115,21 +117,26 @@ namespace DataTool.App.ViewModels
 
         private void OpenConfiguration()
         {
-            var configVm = new ConfigurationViewModel(_profileStore, _connectionTester, _dialogs);
-            if (_dialogs.ShowConfiguration(configVm))
-                ReloadEnvironments(SelectedEnvironment?.Id);
+            _dialogs.ShowConfiguration(new ConfigurationViewModel(_catalog, _dialogs));
+            ReloadProvinces();
         }
 
-        private void ReloadEnvironments(Guid? keepSelectedId)
+        /// <summary>Đọc lại thư mục cấu hình (sau khi sửa/đổi thư mục).</summary>
+        public void ReloadProvinces()
         {
-            Environments.Clear();
-            foreach (var profile in _profileStore.Load())
-                Environments.Add(profile);
-
-            SelectedEnvironment =
-                Environments.FirstOrDefault(e => keepSelectedId.HasValue && e.Id == keepSelectedId.Value)
-                ?? Environments.FirstOrDefault(e => !e.IsProduction)
-                ?? Environments.FirstOrDefault();
+            _reloading = true;
+            try
+            {
+                Provinces.Clear();
+                foreach (var p in _catalog.LoadAll())
+                    Provinces.Add(p);
+                SelectedProvince = _catalog.FindActive(Provinces);
+            }
+            finally
+            {
+                _reloading = false;
+            }
+            OnPropertyChanged(nameof(ConfigFolder));
         }
     }
 }

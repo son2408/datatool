@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using DataTool.Core.Environments;
+using DataTool.Core.Provinces;
 using DataTool.Core.Logging;
 
 namespace DataTool.Core.Tasks
@@ -47,15 +47,15 @@ namespace DataTool.Core.Tasks
     /// <summary>
     /// Chạy một ITask trên luồng nền: ghi log ra file, bắt lỗi, xử lý huỷ, đo thời gian.
     /// Không biết gì về giao diện; dùng chung cho App và ConsoleDemo.
-    /// Việc xác nhận (tác vụ xoá, Production) do lớp giao diện quyết định trước khi gọi.
+    /// Việc xác nhận (tác vụ xoá phải gõ lại mã tỉnh) do lớp giao diện quyết định trước khi gọi.
     /// </summary>
     public class TaskRunner
     {
-        public async Task<TaskRunResult> RunAsync(ITask task, EnvironmentProfile environment,
+        public async Task<TaskRunResult> RunAsync(ITask task, ProvinceProfile province,
             TaskRunOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (task == null) throw new ArgumentNullException(nameof(task));
-            if (environment == null) throw new ArgumentNullException(nameof(environment));
+            if (province == null) throw new ArgumentNullException(nameof(province));
             options = options ?? new TaskRunOptions();
 
             string title = TaskPath.GetTitle(task.MenuPath);
@@ -81,10 +81,10 @@ namespace DataTool.Core.Tasks
 
             try
             {
-                logger.Info($"Bắt đầu \"{title}\" trên môi trường {environment.Name} ({environment.Kind}).");
+                logger.Info($"Bắt đầu \"{title}\" trên tỉnh {province.DisplayName} ({province.Id}).");
                 if (fileLogger != null) logger.Debug("File log: " + fileLogger.FilePath);
 
-                var context = new TaskContext(environment, logger, options.Progress, options.Parameters, cancellationToken);
+                var context = new TaskContext(province, logger, options.Progress, options.Parameters, cancellationToken);
 
                 // Task.Run để code đồng bộ trong tác vụ không làm treo giao diện.
                 await Task.Run(() => task.ExecuteAsync(context), cancellationToken).ConfigureAwait(false);

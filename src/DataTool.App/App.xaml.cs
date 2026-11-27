@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using DataTool.App.Diagnostics;
 using DataTool.App.Services;
 using DataTool.App.ViewModels;
+using DataTool.Configuration;
 using DataTool.UI.Controls;
 
 namespace DataTool.App
@@ -17,8 +18,6 @@ namespace DataTool.App
             base.OnStartup(e);
             DispatcherUnhandledException += OnUnhandledException;
 
-            // Giai đoạn dựng giao diện: dùng dữ liệu mẫu.
-            // Các bước sau sẽ thay bằng ConfigStore (JSON), TaskRegistry (quét ITask) và tester thật.
             var dialogs = new DialogService();
 
             int index = Array.IndexOf(e.Args, "--screenshots");
@@ -27,20 +26,22 @@ namespace DataTool.App
                 string folder = index + 1 < e.Args.Length ? e.Args[index + 1] : "screenshots";
                 _screenshotMode = true;
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                var code = await ScreenshotRunner.RunAsync(folder, new SampleProfileStore(), new FakeConnectionTester(), dialogs);
+                var code = await ScreenshotRunner.RunAsync(folder, dialogs);
                 Shutdown(code);
                 return;
             }
 
-            var mainViewModel = new MainViewModel(
-                new SampleProfileStore(),
-                new FakeConnectionTester(),
-                dialogs,
-                SampleTaskCatalog.GetTasks());
+            // Cấu hình tỉnh: đọc các file .yml trong thư mục người dùng chọn (ghi nhớ trong settings.yml).
+            // Tác vụ: vẫn là dữ liệu mẫu, bước VBDLIS sẽ thay bằng TaskRegistry (quét ITask).
+            var catalog = new ProvinceCatalog(new UserSettingsStore(AppPaths.SettingsFile), AppPaths.DefaultConfigFolder);
+            var mainViewModel = new MainViewModel(catalog, dialogs, SampleTaskCatalog.GetTasks());
 
             var window = new MainWindow { DataContext = mainViewModel };
             MainWindow = window;
             window.Show();
+
+            if (catalog.LastErrors.Count > 0)
+                dialogs.ShowError("Một số file cấu hình không đọc được", string.Join(Environment.NewLine, catalog.LastErrors));
         }
 
         private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

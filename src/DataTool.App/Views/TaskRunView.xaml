@@ -54,10 +54,10 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Sẽ chạy trên" Style="{StaticResource DT.Text.Caption}" VerticalAlignment="Center" Margin="0,0,10,0" />
-                    <!-- Môi trường lấy từ MainViewModel (DataContext của cửa sổ) -->
+                    <!-- Tỉnh lấy từ MainViewModel (DataContext của cửa sổ) -->
                     <controls:EnvironmentBadge
-                        EnvironmentName="{Binding DataContext.SelectedEnvironment.Name, RelativeSource={RelativeSource AncestorType=Window}}"
-                        Level="{Binding DataContext.SelectedEnvironment.Level, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        Level="Default"
+                        EnvironmentName="{Binding DataContext.SelectedProvince.DisplayName, RelativeSource={RelativeSource AncestorType=Window}, TargetNullValue='Chưa chọn tỉnh', FallbackValue='Chưa chọn tỉnh'}" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"

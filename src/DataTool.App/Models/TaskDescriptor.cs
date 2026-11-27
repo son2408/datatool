@@ -1,12 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DataTool.Core.Logging;
+using DataTool.Core.Provinces;
 using MaterialDesignThemes.Wpf;
 
 namespace DataTool.App.Models
 {
     // TẠM THỜI cho giai đoạn dựng giao diện.
-    // Ở bước Core, mô tả tác vụ sẽ lấy từ các class implement ITask (quét bằng reflection).
+    // Ở bước VBDLIS, mô tả tác vụ sẽ lấy từ các class implement ITask (TaskRegistry) và chạy bằng TaskRunner.
 
     /// <summary>Thông tin một tác vụ hiển thị trên menu.</summary>
     public class TaskDescriptor
@@ -39,31 +41,22 @@ namespace DataTool.App.Models
         }
     }
 
-    public enum LogLevel
-    {
-        Debug,
-        Info,
-        Success,
-        Warning,
-        Error
-    }
-
-    /// <summary>Ngữ cảnh truyền cho tác vụ giả lập: môi trường, báo tiến trình, ghi log, huỷ.</summary>
+    /// <summary>Ngữ cảnh truyền cho tác vụ giả lập: tỉnh, báo tiến trình, ghi log, huỷ.</summary>
     public class FakeTaskContext
     {
         private readonly IProgress<ProgressInfo> _progress;
         private readonly IProgress<LogEntry> _log;
 
-        public FakeTaskContext(EnvironmentProfile environment, IProgress<ProgressInfo> progress,
+        public FakeTaskContext(ProvinceProfile province, IProgress<ProgressInfo> progress,
             IProgress<LogEntry> log, CancellationToken cancellationToken)
         {
-            Environment = environment;
+            Province = province;
             _progress = progress;
             _log = log;
             CancellationToken = cancellationToken;
         }
 
-        public EnvironmentProfile Environment { get; }
+        public ProvinceProfile Province { get; }
         public CancellationToken CancellationToken { get; }
 
         public void Report(double percent, string message) => _progress.Report(new ProgressInfo(percent, message));
@@ -82,21 +75,5 @@ namespace DataTool.App.Models
 
         public double Percent { get; }
         public string Message { get; }
-    }
-
-    public sealed class LogEntry
-    {
-        public LogEntry(LogLevel level, string message)
-        {
-            Timestamp = DateTime.Now;
-            Level = level;
-            Message = message;
-        }
-
-        public DateTime Timestamp { get; }
-        public LogLevel Level { get; }
-        public string Message { get; }
-
-        public override string ToString() => $"[{Timestamp:HH:mm:ss}] {Level,-7} {Message}";
     }
 }

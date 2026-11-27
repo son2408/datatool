@@ -5,7 +5,7 @@
         xmlns:controls="clr-namespace:DataTool.UI.Controls;assembly=DataTool.UI.Controls"
         xmlns:vm="clr-namespace:DataTool.App.ViewModels"
         xmlns:views="clr-namespace:DataTool.App.Views"
-        Title="{Binding SelectedEnvironment.Name, StringFormat='DataTool  ·  {0}'}"
+        Title="{Binding SelectedProvince.DisplayName, StringFormat='DataTool  ·  {0}', TargetNullValue=DataTool, FallbackValue=DataTool}"
         Width="1280" Height="800"
         MinWidth="960" MinHeight="600"
         WindowStartupLocation="CenterScreen"
@@ -17,19 +17,7 @@
         </DataTemplate>
     </Window.Resources>
 
-    <!-- Viền đỏ quanh cửa sổ khi đang chọn Production -->
-    <Border BorderBrush="{Binding SelectedEnvironment.Level, Converter={StaticResource EnvironmentBrush}}">
-        <Border.Style>
-            <Style TargetType="Border">
-                <Setter Property="BorderThickness" Value="0" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsProduction}" Value="True">
-                        <Setter Property="BorderThickness" Value="4" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
-
+    <Border>
         <DockPanel>
             <!-- ===== Thanh trên cùng ===== -->
             <Border DockPanel.Dock="Top"
@@ -54,25 +42,23 @@
                                 Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
-                        <TextBlock Text="Môi trường"
+                        <TextBlock Text="Tỉnh"
                                    Style="{StaticResource DT.Text.Caption}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,10,0" />
-                        <ComboBox Width="230"
-                                  ItemsSource="{Binding Environments}"
-                                  SelectedItem="{Binding SelectedEnvironment}"
-                                  IsEnabled="{Binding CanChangeEnvironment}"
-                                  ToolTip="Chọn bộ cấu hình sẽ dùng khi chạy tác vụ">
+                        <ComboBox Width="200"
+                                  ItemsSource="{Binding Provinces}"
+                                  SelectedItem="{Binding SelectedProvince}"
+                                  IsEnabled="{Binding CanChangeProvince}"
+                                  materialDesign:HintAssist.Hint="Chọn tỉnh"
+                                  ToolTip="Tỉnh sẽ dùng khi chạy tác vụ">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Ellipse Width="10" Height="10" Margin="0,0,10,0"
                                                  VerticalAlignment="Center"
-                                                 Fill="{Binding Level, Converter={StaticResource EnvironmentBrush}}" />
-                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Level, StringFormat='  ·  {0}'}"
-                                                   Style="{StaticResource DT.Text.Caption}"
-                                                   VerticalAlignment="Center" />
+                                                 Fill="{StaticResource DT.Brush.Primary}" />
+                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
@@ -80,7 +66,7 @@
                         <Button Margin="12,0,0,0"
                                 Command="{Binding OpenConfigurationCommand}"
                                 Style="{StaticResource DT.Button.Secondary}"
-                                ToolTip="Thêm, sửa, xoá các bộ cấu hình">
+                                ToolTip="Xem, sửa cấu hình các tỉnh">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CogOutline" Width="18" Height="18" Margin="0,0,8,0" VerticalAlignment="Center" />
                                 <TextBlock Text="Cấu hình" VerticalAlignment="Center" />
@@ -92,21 +78,6 @@
                 </DockPanel>
             </Border>
 
-            <!-- ===== Cảnh báo Production ===== -->
-            <Border DockPanel.Dock="Top"
-                    Background="{StaticResource DT.Brush.Danger}"
-                    Padding="20,8"
-                    Visibility="{Binding IsProduction, Converter={StaticResource BoolToVisibility}}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="AlertOctagon" Foreground="White" Width="18" Height="18" VerticalAlignment="Center" />
-                    <TextBlock Margin="10,0,0,0" Foreground="White" VerticalAlignment="Center">
-                        <Run Text="Bạn đang làm việc trên môi trường" />
-                        <Run Text="{Binding SelectedEnvironment.Name, Mode=OneWay}" FontWeight="Bold" />
-                        <Run Text=". Mọi thao tác đều ảnh hưởng tới dữ liệu thật." />
-                    </TextBlock>
-                </StackPanel>
-            </Border>
-
             <!-- ===== Thanh trạng thái ===== -->
             <Border DockPanel.Dock="Bottom"
                     Background="{StaticResource DT.Brush.Surface}"
@@ -116,7 +87,7 @@
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Right"
                                Style="{StaticResource DT.Text.Caption}"
-                               Text="{Binding DataFolder, StringFormat='Dữ liệu: {0}'}" />
+                               Text="{Binding ConfigFolder, StringFormat='Thư mục cấu hình: {0}'}" />
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="CircleMedium" Width="14" Height="14" VerticalAlignment="Center">
                             <materialDesign:PackIcon.Style>
@@ -158,6 +129,7 @@
                                  materialDesign:TextFieldAssist.HasLeadingIcon="True"
                                  materialDesign:TextFieldAssist.LeadingIcon="Magnify" />
                         <TreeView x:Name="MenuTree"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ItemsSource="{Binding Menu}"
                                   SelectedItemChanged="OnMenuSelectedItemChanged">
                             <TreeView.ItemContainerStyle>

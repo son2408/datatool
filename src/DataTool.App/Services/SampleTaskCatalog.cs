@@ -34,7 +34,7 @@ namespace DataTool.App.Services
         private static async Task SimulateDeleteAsync(FakeTaskContext ctx)
         {
             const int total = 250;
-            ctx.Info($"Kết nối CSDL {ctx.Environment.Database.Host}/{ctx.Environment.Database.ServiceName}...");
+            ctx.Info($"Tỉnh {ctx.Province.DisplayName}: kết nối MongoDB...");
             await Task.Delay(600, ctx.CancellationToken);
             ctx.Info($"Tìm thấy {total} thửa đất cần xoá dữ liệu không gian.");
 
@@ -51,7 +51,7 @@ namespace DataTool.App.Services
                 ctx.Report(i * 100.0 / total, $"Đang xoá thửa {i}/{total}");
             }
 
-            ctx.Info("Đồng bộ chỉ mục SOLR...");
+            ctx.Info($"Đồng bộ chỉ mục Solr ({ctx.Province.SolrKey})...");
             await Task.Delay(500, ctx.CancellationToken);
         }
 

@@ -1,0 +1,29 @@
+<Window x:Class="DataTool.UI.Controls.InputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DataTool"
+        Width="440"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Style="{DynamicResource DT.Window}"
+        Background="{DynamicResource DT.Brush.Surface}">
+    <StackPanel Margin="24,20,24,20">
+        <TextBlock x:Name="TitleText" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <TextBlock x:Name="MessageText" Margin="0,10,0,0" TextWrapping="Wrap"
+                   Foreground="{DynamicResource DT.Brush.TextSecondary}" />
+        <TextBox x:Name="InputBox" Margin="0,12,0,0" Padding="10,8"
+                 FontFamily="{DynamicResource DT.Font.Mono}"
+                 Style="{DynamicResource MaterialDesignOutlinedTextBox}"
+                 TextChanged="OnTextChanged" />
+        <TextBlock x:Name="ErrorText" Margin="0,6,0,0" FontSize="12" TextWrapping="Wrap"
+                   Foreground="{DynamicResource DT.Brush.Danger}" Visibility="Collapsed" />
+        <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Huỷ" IsCancel="True" MinWidth="90" Margin="0,0,10,0"
+                    Style="{DynamicResource DT.Button.Secondary}" />
+            <Button x:Name="OkButton" Content="Đồng ý" IsDefault="True" MinWidth="100"
+                    Click="OnOkClick" Style="{DynamicResource DT.Button.Primary}" />
+        </StackPanel>
+    </StackPanel>
+</Window>

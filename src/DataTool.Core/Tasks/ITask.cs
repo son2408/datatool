@@ -14,7 +14,7 @@ namespace DataTool.Core.Tasks
         /// <summary>Mô tả ngắn hiển thị trên màn hình chạy.</summary>
         string Description { get; }
 
-        /// <summary>true nếu tác vụ thay đổi/xoá dữ liệu: bắt xác nhận, Production phải gõ lại tên môi trường.</summary>
+        /// <summary>true nếu tác vụ thay đổi/xoá dữ liệu: phải xác nhận bằng cách gõ lại mã tỉnh.</summary>
         bool IsDestructive { get; }
 
         /// <summary>Tên biểu tượng Material Design (ví dụ "RocketLaunchOutline"); để trống dùng mặc định.</summary>

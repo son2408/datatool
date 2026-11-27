@@ -97,4 +97,18 @@
         <Setter Property="Padding" Value="12,10" />
         <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.85" />
     </Style>
+
+    <!-- Ô nhập có nhãn đặt phía trên (không dùng nhãn nổi), chữ đơn cách cho chuỗi kết nối -->
+    <Style x:Key="DT.Field.Code" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+        <Setter Property="FontFamily" Value="{StaticResource DT.Font.Mono}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="DT.Field.Label" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextSecondary}" />
+    </Style>
 </ResourceDictionary>

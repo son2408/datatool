@@ -7,6 +7,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataTool.App.Models;
 using DataTool.App.Services;
+using DataTool.Core.Logging;
+using DataTool.Core.Provinces;
 
 namespace DataTool.App.ViewModels
 {
@@ -14,7 +16,7 @@ namespace DataTool.App.ViewModels
     public class TaskRunViewModel : ObservableObject
     {
         private readonly TaskDescriptor _task;
-        private readonly Func<EnvironmentProfile> _getEnvironment;
+        private readonly Func<ProvinceProfile> _getProvince;
         private readonly IDialogService _dialogs;
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private CancellationTokenSource _cts;
@@ -26,10 +28,10 @@ namespace DataTool.App.ViewModels
         private bool _isRunning;
         private bool _isCancelling;
 
-        public TaskRunViewModel(TaskDescriptor task, Func<EnvironmentProfile> getEnvironment, IDialogService dialogs)
+        public TaskRunViewModel(TaskDescriptor task, Func<ProvinceProfile> getProvince, IDialogService dialogs)
         {
             _task = task;
-            _getEnvironment = getEnvironment;
+            _getProvince = getProvince;
             _dialogs = dialogs;
 
             RunCommand = new AsyncRelayCommand(RunAsync, () => !IsRunning);
@@ -89,14 +91,14 @@ namespace DataTool.App.ViewModels
 
         private async Task RunAsync()
         {
-            var env = _getEnvironment();
-            if (env == null)
+            var province = _getProvince();
+            if (province == null)
             {
-                _dialogs.ShowError("Chưa chọn môi trường", "Hãy chọn một bộ cấu hình ở góc trên bên phải trước khi chạy.");
+                _dialogs.ShowError("Chưa chọn tỉnh", "Hãy chọn tỉnh ở góc trên bên phải (hoặc trong Cấu hình) trước khi chạy.");
                 return;
             }
 
-            if (!ConfirmRun(env))
+            if (!ConfirmRun(province))
             {
                 AddLog(LogLevel.Warning, "Người dùng không xác nhận, tác vụ chưa chạy.");
                 return;
@@ -120,11 +122,11 @@ namespace DataTool.App.ViewModels
             });
             var log = new Progress<LogEntry>(entry => { Logs.Add(entry); UpdateElapsed(); });
 
-            AddLog(LogLevel.Info, $"Bắt đầu \"{Title}\" trên môi trường {env.Name}.");
+            AddLog(LogLevel.Info, $"Bắt đầu \"{Title}\" trên tỉnh {province.DisplayName}.");
 
             try
             {
-                var context = new FakeTaskContext(env, progress, log, _cts.Token);
+                var context = new FakeTaskContext(province, progress, log, _cts.Token);
                 await Task.Run(() => _task.Execute(context), _cts.Token);
 
                 Progress = 100;
@@ -152,18 +154,17 @@ namespace DataTool.App.ViewModels
             }
         }
 
-        private bool ConfirmRun(EnvironmentProfile env)
+        private bool ConfirmRun(ProvinceProfile province)
         {
             if (!IsDangerous) return true;
 
             string message =
                 $"Tác vụ \"{Title}\" sẽ thay đổi dữ liệu và không thể hoàn tác.\n\n" +
-                $"Môi trường: {env.Name}\n" +
-                $"CSDL: {env.Database.Host}/{env.Database.ServiceName}";
+                $"Tỉnh: {province.DisplayName} ({province.Id})\n" +
+                $"Solr key: {province.SolrKey}";
 
-            // Production phải gõ lại tên môi trường
-            string required = env.IsProduction ? env.Name : null;
-            return _dialogs.ConfirmDanger("Xác nhận thao tác xoá", message, required, "Chạy tác vụ");
+            // Tác vụ xoá luôn phải gõ lại mã tỉnh
+            return _dialogs.ConfirmDanger("Xác nhận thao tác xoá", message, province.DisplayName, "Chạy tác vụ");
         }
 
         private void Cancel()

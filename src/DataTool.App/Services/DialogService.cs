@@ -23,19 +23,25 @@ namespace DataTool.App.Services
         public void ShowError(string title, string message)
             => ConfirmDialog.ShowMessage(ActiveWindow, title, message, DialogKind.Error);
 
-        public bool ShowConfiguration(ConfigurationViewModel viewModel)
+        public string Prompt(string title, string message, string defaultValue = "", Func<string, string> validate = null)
+            => InputDialog.Show(ActiveWindow, title, message, defaultValue, validate);
+
+        public string PickFolder(string title, string initialFolder)
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                dialog.Description = title;
+                dialog.ShowNewFolderButton = true;
+                if (!string.IsNullOrEmpty(initialFolder) && Directory.Exists(initialFolder))
+                    dialog.SelectedPath = initialFolder;
+                return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK ? dialog.SelectedPath : null;
+            }
+        }
+
+        public void ShowConfiguration(ConfigurationViewModel viewModel)
         {
             var window = new ConfigurationWindow { DataContext = viewModel, Owner = ActiveWindow };
-            EventHandler<bool> handler = (s, saved) => window.DialogResult = saved;
-            viewModel.CloseRequested += handler;
-            try
-            {
-                return window.ShowDialog() == true;
-            }
-            finally
-            {
-                viewModel.CloseRequested -= handler;
-            }
+            window.ShowDialog();
         }
 
         public void OpenFolder(string path)
@@ -48,6 +54,18 @@ namespace DataTool.App.Services
             catch (Exception ex)
             {
                 ShowError("Không mở được thư mục", ex.Message);
+            }
+        }
+
+        public void OpenFile(string path)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("notepad.exe", "\"" + path + "\"") { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                ShowError("Không mở được file", ex.Message);
             }
         }
 

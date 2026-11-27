@@ -3,6 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>DataTool.App</RootNamespace>
     <AssemblyName>DataTool</AssemblyName>
   </PropertyGroup>
@@ -10,6 +11,8 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataTool.Core\DataTool.Core.csproj" />
+    <ProjectReference Include="..\DataTool.Configuration\DataTool.Configuration.csproj" />
     <ProjectReference Include="..\DataTool.UI.Themes\DataTool.UI.Themes.csproj" />
     <ProjectReference Include="..\DataTool.UI.Controls\DataTool.UI.Controls.csproj" />
   </ItemGroup>

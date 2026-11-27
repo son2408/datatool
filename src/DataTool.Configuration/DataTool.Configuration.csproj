@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>DataTool.Configuration</RootNamespace>
+    <Description>Đọc/ghi cấu hình tỉnh dạng .yml (giữ nguyên định dạng file) và thiết lập người dùng.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataTool.Core\DataTool.Core.csproj" />
+  </ItemGroup>
+</Project>

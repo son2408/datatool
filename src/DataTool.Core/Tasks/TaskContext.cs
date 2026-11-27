@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DataTool.Core.Environments;
+using DataTool.Core.Provinces;
 using DataTool.Core.Logging;
 
 namespace DataTool.Core.Tasks
@@ -22,7 +22,8 @@ namespace DataTool.Core.Tasks
     /// <summary>Những gì một tác vụ nhận được khi chạy.</summary>
     public interface ITaskContext
     {
-        EnvironmentProfile Environment { get; }
+        /// <summary>Cấu hình của tỉnh đang chọn.</summary>
+        ProvinceProfile Province { get; }
         CancellationToken CancellationToken { get; }
         ITaskLogger Logger { get; }
 
@@ -49,17 +50,17 @@ namespace DataTool.Core.Tasks
     {
         private readonly IProgress<TaskProgress> _progress;
 
-        public TaskContext(EnvironmentProfile environment, ITaskLogger logger, IProgress<TaskProgress> progress,
+        public TaskContext(ProvinceProfile province, ITaskLogger logger, IProgress<TaskProgress> progress,
             IReadOnlyDictionary<string, string> parameters, CancellationToken cancellationToken)
         {
-            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            Province = province ?? throw new ArgumentNullException(nameof(province));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _progress = progress;
             Parameters = parameters ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             CancellationToken = cancellationToken;
         }
 
-        public EnvironmentProfile Environment { get; }
+        public ProvinceProfile Province { get; }
         public CancellationToken CancellationToken { get; }
         public ITaskLogger Logger { get; }
         public IReadOnlyDictionary<string, string> Parameters { get; }
