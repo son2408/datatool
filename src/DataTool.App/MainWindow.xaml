@@ -42,27 +42,17 @@
                                 Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
-                        <TextBlock Text="Tỉnh"
-                                   Style="{StaticResource DT.Text.Caption}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,10,0" />
-                        <ComboBox Width="200"
-                                  ItemsSource="{Binding Provinces}"
-                                  SelectedItem="{Binding SelectedProvince}"
-                                  IsEnabled="{Binding CanChangeProvince}"
-                                  materialDesign:HintAssist.Hint="Chọn tỉnh"
-                                  ToolTip="Tỉnh sẽ dùng khi chạy tác vụ">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Ellipse Width="10" Height="10" Margin="0,0,10,0"
-                                                 VerticalAlignment="Center"
-                                                 Fill="{StaticResource DT.Brush.Primary}" />
-                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                        <controls:SearchPicker x:Name="ProvincePicker"
+                                               Label="TỈNH ĐANG DÙNG"
+                                               Icon="MapMarkerOutline"
+                                               Placeholder="Chọn tỉnh"
+                                               SearchHint="Tìm tỉnh..."
+                                               EmptyText="Không có tỉnh nào khớp"
+                                               ItemsSource="{Binding Provinces}"
+                                               SelectedItem="{Binding SelectedProvince}"
+                                               DisplayMemberPath="DisplayName"
+                                               IsEnabled="{Binding CanChangeProvince}"
+                                               ToolTip="Tỉnh sẽ dùng khi chạy tác vụ" />
                         <Button Margin="12,0,0,0"
                                 Command="{Binding OpenConfigurationCommand}"
                                 Style="{StaticResource DT.Button.Secondary}"

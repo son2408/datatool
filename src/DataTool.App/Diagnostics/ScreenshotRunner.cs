@@ -46,6 +46,16 @@ namespace DataTool.App.Diagnostics
                 await Settle(1000);
                 Save(main, outputFolder, "01-man-hinh-chinh.png");
 
+                // Ô chọn tỉnh có tìm kiếm đang mở
+                var picker = main.ProvincePicker;
+                picker.IsDropDownOpen = true;
+                await Settle(400);
+                picker.SearchText = "g";
+                await Settle(500);
+                SaveWithPopup(main, picker, outputFolder, "01b-chon-tinh-tim-kiem.png");
+                picker.IsDropDownOpen = false;
+                await Settle(300);
+
                 // Đang chạy Publish code
                 var group = vm.Menu.First();
                 var publish = group.Children.First(n => n.Title == "Publish code");
@@ -152,8 +162,24 @@ namespace DataTool.App.Diagnostics
             await Dispatcher.Yield(DispatcherPriority.ContextIdle);
         }
 
+        /// <summary>Chụp cửa sổ kèm ô thả xuống (Popup là cửa sổ riêng nên phải vẽ chồng lên).</summary>
+        private static void SaveWithPopup(Window window, DataTool.UI.Controls.SearchPicker picker, string folder, string fileName)
+        {
+            picker.ApplyTemplate();
+            var popup = picker.Template.FindName("PART_Popup", picker) as System.Windows.Controls.Primitives.Popup;
+            var child = popup?.Child as FrameworkElement;
+            if (child == null) { Save(window, folder, fileName); return; }
+            child.UpdateLayout();
+            var content = (FrameworkElement)window.Content;
+            var origin = picker.TranslatePoint(new Point(0, picker.ActualHeight), content);
+            var m = child.Margin;
+            var rect = new Rect(origin.X + content.Margin.Left + m.Left, origin.Y + content.Margin.Top + popup.VerticalOffset + m.Top,
+                child.ActualWidth, child.ActualHeight);
+            Save(window, folder, fileName, child, rect);
+        }
+
         /// <summary>Chụp vùng nội dung của cửa sổ (không gồm thanh tiêu đề Windows).</summary>
-        private static void Save(Window window, string folder, string fileName)
+        private static void Save(Window window, string folder, string fileName, Visual overlay = null, Rect overlayRect = default)
         {
             window.UpdateLayout();
             var content = (FrameworkElement)window.Content;
@@ -167,6 +193,9 @@ namespace DataTool.App.Diagnostics
                 dc.DrawRectangle(window.Background ?? Brushes.White, null, new Rect(0, 0, w, h));
                 dc.DrawRectangle(new VisualBrush(content) { Stretch = Stretch.None, AlignmentX = AlignmentX.Left, AlignmentY = AlignmentY.Top },
                     null, new Rect(margin.Left, margin.Top, content.ActualWidth, content.ActualHeight));
+                if (overlay != null)
+                    dc.DrawRectangle(new VisualBrush(overlay) { Stretch = Stretch.None, AlignmentX = AlignmentX.Left, AlignmentY = AlignmentY.Top },
+                        null, overlayRect);
             }
 
             var bitmap = new RenderTargetBitmap((int)Math.Ceiling(w * Scale), (int)Math.Ceiling(h * Scale),
