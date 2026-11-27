@@ -15,6 +15,21 @@
     <ProjectReference Include="..\DataTool.Configuration\DataTool.Configuration.csproj" />
     <ProjectReference Include="..\DataTool.UI.Themes\DataTool.UI.Themes.csproj" />
     <ProjectReference Include="..\DataTool.UI.Controls\DataTool.UI.Controls.csproj" />
-    <ProjectReference Include="D:\Thaison\2020\VDMSDataHelper\VDMSDataHelper\VDMSDataHelper.csproj" />
   </ItemGroup>
+
+  <!--
+    Project VDMSDataHelper (DataHandler) nằm ngoài repo, chỉ có trên máy anh Sơn.
+    Chỉ tham chiếu khi file tồn tại, để máy khác và GitHub vẫn build được.
+    Máy khác đặt ở chỗ khác thì đổi đường dẫn dưới đây (hoặc truyền /p:VdmsDataHelperProject=...).
+  -->
+  <PropertyGroup>
+    <VdmsDataHelperProject Condition="'$(VdmsDataHelperProject)' == ''">D:\Thaison\2020\VDMSDataHelper\VDMSDataHelper\VDMSDataHelper.csproj</VdmsDataHelperProject>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(VdmsDataHelperProject)')">
+    <ProjectReference Include="$(VdmsDataHelperProject)" />
+  </ItemGroup>
+  <PropertyGroup Condition="Exists('$(VdmsDataHelperProject)')">
+    <!-- Dùng #if HAS_VDMS trong code khi gọi DataHandler -->
+    <DefineConstants>$(DefineConstants);HAS_VDMS</DefineConstants>
+  </PropertyGroup>
 </Project>
