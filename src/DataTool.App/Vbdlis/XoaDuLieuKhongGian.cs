@@ -147,6 +147,9 @@ namespace DataTool.App.Vbdlis
         /// <summary>Tạo DataHandler từ cấu hình tỉnh (file .yml) thay cho app.config.</summary>
         private static DataHandler CreateDataHandler(ProvinceProfile p)
         {
+            // Thư viện cũ còn đọc app.config: ghi đè bằng giá trị của tỉnh đang chọn trước khi khởi tạo
+            AppConfigOverride.Apply(p);
+
             var mongo = new MongoDBConfig
             {
                 VDMSConnectionString = p.VdmsConnectionString,

@@ -11,6 +11,9 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\DataTool.Core\DataTool.Core.csproj" />
     <ProjectReference Include="..\DataTool.Configuration\DataTool.Configuration.csproj" />
     <ProjectReference Include="..\DataTool.UI.Themes\DataTool.UI.Themes.csproj" />
