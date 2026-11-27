@@ -20,15 +20,15 @@ namespace DataTool.App.Services
             new TaskDescriptor
             {
                 MenuPath = "VBDLIS/Xoá dữ liệu thửa đất không gian",
-                Description = "Xoá dữ liệu không gian (hình thể) của các thửa đất theo danh sách mã. " +
+                Description = "Xoá dữ liệu không gian của các xã theo danh sách mã xã (29 layer: thửa đất, địa phận, giao thông, thuỷ hệ...). " +
                               "Thao tác không thể hoàn tác; kết quả được lưu ra file trong thư mục đã chọn.",
                 IsDangerous = true,
                 Icon = PackIconKind.MapMarkerRemoveOutline,
                 Parameters = new[]
                 {
-                    new TaskParameter(DeleteCodesKey, "Danh sách mã", TaskParameterKind.CodeList)
+                    new TaskParameter(DeleteCodesKey, "Danh sách mã xã", TaskParameterKind.CodeList)
                     {
-                        Hint = "ngăn cách bằng dấu phẩy hoặc xuống dòng",
+                        Hint = "ngăn cách bằng dấu phẩy hoặc xuống dòng; mỗi xã xoá 29 layer không gian theo maXa",
                         Placeholder = "12345, 12346, 12347"
                     },
                     new TaskParameter(DeleteOutputKey, "Thư mục lưu file", TaskParameterKind.Folder)
@@ -37,7 +37,7 @@ namespace DataTool.App.Services
                         DefaultValue = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DataTool", "xoa-thua-khong-gian")
                     }
                 },
-                Execute = SimulateDeleteAsync
+                Execute = Vbdlis.XoaDuLieuKhongGian.RunAsync
             },
             new TaskDescriptor
             {
@@ -48,56 +48,8 @@ namespace DataTool.App.Services
             }
         };
 
-        public const string DeleteCodesKey = "codes";
-        public const string DeleteOutputKey = "output_folder";
-
-        private static async Task SimulateDeleteAsync(FakeTaskContext ctx)
-        {
-            var codes = ctx.GetCodeList(DeleteCodesKey);
-            string folder = ctx.GetParameter(DeleteOutputKey);
-            Directory.CreateDirectory(folder);
-            string file = Path.Combine(folder, $"xoa_{ctx.Province.Id}_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
-
-            ctx.Info($"Tỉnh {ctx.Province.DisplayName}: kết nối MongoDB...");
-            await Task.Delay(600, ctx.CancellationToken);
-            ctx.Info($"Xoá dữ liệu không gian của {codes.Count} mã.");
-
-            var result = new StringBuilder("ma,ket_qua,ghi_chu\r\n");
-            int deleted = 0, skipped = 0;
-            try
-            {
-                for (int i = 0; i < codes.Count; i++)
-                {
-                    ctx.CancellationToken.ThrowIfCancellationRequested();
-                    await Task.Delay(120, ctx.CancellationToken);
-
-                    // Giả lập: mã kết thúc bằng 0 coi như không có dữ liệu không gian
-                    if (codes[i].EndsWith("0"))
-                    {
-                        skipped++;
-                        ctx.Warn($"Mã {codes[i]}: không có dữ liệu không gian, bỏ qua.");
-                        result.Append(codes[i]).Append(",bo_qua,khong co du lieu khong gian\r\n");
-                    }
-                    else
-                    {
-                        deleted++;
-                        ctx.Info($"Mã {codes[i]}: đã xoá.");
-                        result.Append(codes[i]).Append(",da_xoa,\r\n");
-                    }
-
-                    ctx.Report((i + 1) * 100.0 / codes.Count, $"Đang xoá {i + 1}/{codes.Count}");
-                }
-
-                ctx.Info($"Đồng bộ chỉ mục Solr ({ctx.Province.SolrKey})...");
-                await Task.Delay(500, ctx.CancellationToken);
-            }
-            finally
-            {
-                // Luôn ghi file kết quả, kể cả khi bị huỷ giữa chừng
-                File.WriteAllText(file, result.ToString(), new UTF8Encoding(true));
-                ctx.Info($"Đã xoá {deleted}, bỏ qua {skipped}. File kết quả: {file}");
-            }
-        }
+        public const string DeleteCodesKey = Vbdlis.XoaDuLieuKhongGian.CodesKey;
+        public const string DeleteOutputKey = Vbdlis.XoaDuLieuKhongGian.OutputFolderKey;
 
         private static async Task SimulatePublishAsync(FakeTaskContext ctx)
         {
