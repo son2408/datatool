@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ using DataTool.App.Models;
 using DataTool.App.Services;
 using DataTool.Core.Logging;
 using DataTool.Core.Provinces;
+using DataTool.Core.Tasks;
 
 namespace DataTool.App.ViewModels
 {
@@ -34,6 +37,9 @@ namespace DataTool.App.ViewModels
             _getProvince = getProvince;
             _dialogs = dialogs;
 
+            Parameters = new ObservableCollection<TaskParameterViewModel>(
+                (task.Parameters ?? Array.Empty<TaskParameter>()).Select(p => new TaskParameterViewModel(p, dialogs)));
+
             RunCommand = new AsyncRelayCommand(RunAsync, () => !IsRunning);
             CancelCommand = new RelayCommand(Cancel, () => IsRunning && !_isCancelling);
             OpenLogFolderCommand = new RelayCommand(() => _dialogs.OpenFolder(AppPaths.LogFolder));
@@ -46,6 +52,10 @@ namespace DataTool.App.ViewModels
         public string Group => _task.Group;
         public string Description => _task.Description;
         public bool IsDangerous => _task.IsDangerous;
+
+        /// <summary>Các ô nhập tham số (form tự sinh theo khai báo của tác vụ).</summary>
+        public ObservableCollection<TaskParameterViewModel> Parameters { get; }
+        public bool HasParameters => Parameters.Count > 0;
 
         public ObservableCollection<LogEntry> Logs { get; } = new ObservableCollection<LogEntry>();
 
@@ -79,11 +89,15 @@ namespace DataTool.App.ViewModels
             private set
             {
                 if (!SetProperty(ref _isRunning, value)) return;
+                OnPropertyChanged(nameof(IsIdle));
                 RunCommand.NotifyCanExecuteChanged();
                 CancelCommand.NotifyCanExecuteChanged();
                 RunningChanged?.Invoke(this, EventArgs.Empty);
             }
         }
+
+        /// <summary>Không chạy: cho phép sửa tham số.</summary>
+        public bool IsIdle => !IsRunning;
 
         public AsyncRelayCommand RunCommand { get; }
         public RelayCommand CancelCommand { get; }
@@ -95,6 +109,16 @@ namespace DataTool.App.ViewModels
             if (province == null)
             {
                 _dialogs.ShowError("Chưa chọn tỉnh", "Hãy chọn tỉnh ở góc trên bên phải (hoặc trong Cấu hình) trước khi chạy.");
+                return;
+            }
+
+            // Kiểm tra tất cả tham số, hiện lỗi dưới từng ô
+            bool valid = true;
+            foreach (var p in Parameters)
+                valid &= p.Validate();
+            if (!valid)
+            {
+                StatusText = "Thiếu thông tin, hãy kiểm tra các ô báo đỏ.";
                 return;
             }
 
@@ -123,10 +147,11 @@ namespace DataTool.App.ViewModels
             var log = new Progress<LogEntry>(entry => { Logs.Add(entry); UpdateElapsed(); });
 
             AddLog(LogLevel.Info, $"Bắt đầu \"{Title}\" trên tỉnh {province.DisplayName}.");
+            var values = Parameters.ToDictionary(p => p.Key, p => p.Value ?? string.Empty);
 
             try
             {
-                var context = new FakeTaskContext(province, progress, log, _cts.Token);
+                var context = new FakeTaskContext(province, progress, log, _cts.Token, values);
                 await Task.Run(() => _task.Execute(context), _cts.Token);
 
                 Progress = 100;
@@ -158,13 +183,39 @@ namespace DataTool.App.ViewModels
         {
             if (!IsDangerous) return true;
 
-            string message =
+            // Tác vụ xoá luôn phải gõ lại mã tỉnh
+            return _dialogs.ConfirmDanger("Xác nhận thao tác xoá", BuildConfirmMessage(province), province.DisplayName, "Chạy tác vụ");
+        }
+
+        /// <summary>Nội dung hộp xác nhận: tác vụ, tỉnh và tóm tắt tham số.</summary>
+        public string BuildConfirmMessage(ProvinceProfile province)
+        {
+            return
                 $"Tác vụ \"{Title}\" sẽ thay đổi dữ liệu và không thể hoàn tác.\n\n" +
                 $"Tỉnh: {province.DisplayName} ({province.Id})\n" +
-                $"Solr key: {province.SolrKey}";
+                $"Solr key: {province.SolrKey}" +
+                DescribeParameters();
+        }
 
-            // Tác vụ xoá luôn phải gõ lại mã tỉnh
-            return _dialogs.ConfirmDanger("Xác nhận thao tác xoá", message, province.DisplayName, "Chạy tác vụ");
+        /// <summary>Tóm tắt tham số để người dùng kiểm tra lại trong hộp xác nhận.</summary>
+        private string DescribeParameters()
+        {
+            if (!HasParameters) return string.Empty;
+            var lines = new List<string>();
+            foreach (var p in Parameters)
+            {
+                if (p.Kind == TaskParameterKind.CodeList)
+                {
+                    var codes = CodeListParser.Parse(p.Value);
+                    string preview = string.Join(", ", codes.Take(10)) + (codes.Count > 10 ? $", ... (+{codes.Count - 10})" : string.Empty);
+                    lines.Add($"{p.Label}: {codes.Count} mã\n   {preview}");
+                }
+                else if (!string.IsNullOrWhiteSpace(p.Value))
+                {
+                    lines.Add($"{p.Label}: {p.Value}");
+                }
+            }
+            return lines.Count == 0 ? string.Empty : "\n\n" + string.Join("\n", lines);
         }
 
         private void Cancel()

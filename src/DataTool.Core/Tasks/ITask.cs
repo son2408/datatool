@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataTool.Core.Tasks
@@ -23,6 +24,9 @@ namespace DataTool.Core.Tasks
         /// <summary>Thứ tự trong nhóm menu (nhỏ đứng trước).</summary>
         int Order { get; }
 
+        /// <summary>Tham số người dùng nhập trước khi chạy (form tự sinh). Không có thì trả về danh sách rỗng.</summary>
+        IReadOnlyList<TaskParameter> Parameters { get; }
+
         /// <summary>Phần xử lý. Dùng context.Log, context.ReportProgress, context.CancellationToken.</summary>
         Task ExecuteAsync(ITaskContext context);
     }
@@ -35,6 +39,7 @@ namespace DataTool.Core.Tasks
         public virtual bool IsDestructive => false;
         public virtual string Icon => null;
         public virtual int Order => 0;
+        public virtual IReadOnlyList<TaskParameter> Parameters => System.Array.Empty<TaskParameter>();
 
         public abstract Task ExecuteAsync(ITaskContext context);
 

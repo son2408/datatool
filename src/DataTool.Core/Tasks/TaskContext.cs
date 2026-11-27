@@ -44,6 +44,10 @@ namespace DataTool.Core.Tasks
 
         public static string GetParameter(this ITaskContext ctx, string name, string defaultValue = null)
             => ctx.Parameters != null && ctx.Parameters.TryGetValue(name, out var v) ? v : defaultValue;
+
+        /// <summary>Đọc tham số dạng danh sách mã (TaskParameterKind.CodeList).</summary>
+        public static IReadOnlyList<string> GetCodeList(this ITaskContext ctx, string name)
+            => CodeListParser.Parse(ctx.GetParameter(name));
     }
 
     internal sealed class TaskContext : ITaskContext

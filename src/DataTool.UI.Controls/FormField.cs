@@ -30,6 +30,46 @@ namespace DataTool.UI.Controls
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(FormField), new PropertyMetadata(false));
 
+        public static readonly DependencyProperty IsMultilineProperty =
+            DependencyProperty.Register(nameof(IsMultiline), typeof(bool), typeof(FormField), new PropertyMetadata(false));
+
+        public static readonly DependencyProperty PlaceholderProperty =
+            DependencyProperty.Register(nameof(Placeholder), typeof(string), typeof(FormField), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty FooterProperty =
+            DependencyProperty.Register(nameof(Footer), typeof(string), typeof(FormField), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty ErrorProperty =
+            DependencyProperty.Register(nameof(Error), typeof(string), typeof(FormField), new PropertyMetadata(null));
+
+        /// <summary>Ô nhập nhiều dòng (cao hơn, cho xuống dòng, có thanh cuộn).</summary>
+        public bool IsMultiline
+        {
+            get => (bool)GetValue(IsMultilineProperty);
+            set => SetValue(IsMultilineProperty, value);
+        }
+
+        /// <summary>Chữ mờ gợi ý khi ô trống.</summary>
+        public string Placeholder
+        {
+            get => (string)GetValue(PlaceholderProperty);
+            set => SetValue(PlaceholderProperty, value);
+        }
+
+        /// <summary>Dòng chú thích nhỏ bên dưới ô (ví dụ "Đã nhập 12 mã").</summary>
+        public string Footer
+        {
+            get => (string)GetValue(FooterProperty);
+            set => SetValue(FooterProperty, value);
+        }
+
+        /// <summary>Thông báo lỗi hiển thị màu đỏ bên dưới ô (ưu tiên hơn Footer).</summary>
+        public string Error
+        {
+            get => (string)GetValue(ErrorProperty);
+            set => SetValue(ErrorProperty, value);
+        }
+
         public string Label
         {
             get => (string)GetValue(LabelProperty);

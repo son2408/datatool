@@ -5,6 +5,7 @@
                     xmlns:conv="clr-namespace:DataTool.UI.Controls.Converters">
 
     <conv:InverseBooleanConverter x:Key="DT.Internal.InverseBool" />
+    <conv:HasTextConverter x:Key="DT.Internal.HasText" />
 
     <Style TargetType="{x:Type local:FormField}">
         <Setter Property="Margin" Value="0,0,0,10" />
@@ -32,9 +33,34 @@
                                  FontSize="13"
                                  Padding="10,7"
                                  VerticalContentAlignment="Center"
+                                 materialDesign:HintAssist.Hint="{TemplateBinding Placeholder}"
+                                 materialDesign:HintAssist.IsFloating="False"
                                  Style="{DynamicResource MaterialDesignOutlinedTextBox}" />
+                        <TextBlock x:Name="FooterText"
+                                   Margin="2,4,0,0" FontSize="12"
+                                   Text="{TemplateBinding Footer}"
+                                   Foreground="{DynamicResource DT.Brush.TextSecondary}" />
                     </StackPanel>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMultiline" Value="True">
+                            <Setter TargetName="PART_TextBox" Property="AcceptsReturn" Value="True" />
+                            <Setter TargetName="PART_TextBox" Property="TextWrapping" Value="Wrap" />
+                            <Setter TargetName="PART_TextBox" Property="VerticalContentAlignment" Value="Top" />
+                            <Setter TargetName="PART_TextBox" Property="Height" Value="96" />
+                            <Setter TargetName="PART_TextBox" Property="VerticalScrollBarVisibility" Value="Auto" />
+                        </Trigger>
+                        <Trigger Property="Footer" Value="{x:Null}">
+                            <Setter TargetName="FooterText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Footer" Value="">
+                            <Setter TargetName="FooterText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Error, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource DT.Internal.HasText}}" Value="True">
+                            <Setter TargetName="FooterText" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="FooterText" Property="Text" Value="{Binding Error, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="FooterText" Property="Foreground" Value="{DynamicResource DT.Brush.Danger}" />
+                            <Setter TargetName="PART_TextBox" Property="BorderBrush" Value="{DynamicResource DT.Brush.Danger}" />
+                        </DataTrigger>
                         <Trigger Property="UseMonospace" Value="False">
                             <Setter TargetName="PART_TextBox" Property="FontFamily" Value="{DynamicResource DT.Font.Ui}" />
                         </Trigger>

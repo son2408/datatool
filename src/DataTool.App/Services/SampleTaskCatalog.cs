@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using DataTool.App.Models;
+using DataTool.Core.Tasks;
 using MaterialDesignThemes.Wpf;
 
 namespace DataTool.App.Services
@@ -16,10 +20,23 @@ namespace DataTool.App.Services
             new TaskDescriptor
             {
                 MenuPath = "VBDLIS/Xoá dữ liệu thửa đất không gian",
-                Description = "Xoá dữ liệu không gian (hình thể) của các thửa đất theo điều kiện lọc. " +
-                              "Thao tác không thể hoàn tác, hãy sao lưu trước khi chạy.",
+                Description = "Xoá dữ liệu không gian (hình thể) của các thửa đất theo danh sách mã. " +
+                              "Thao tác không thể hoàn tác; kết quả được lưu ra file trong thư mục đã chọn.",
                 IsDangerous = true,
                 Icon = PackIconKind.MapMarkerRemoveOutline,
+                Parameters = new[]
+                {
+                    new TaskParameter(DeleteCodesKey, "Danh sách mã", TaskParameterKind.CodeList)
+                    {
+                        Hint = "ngăn cách bằng dấu phẩy hoặc xuống dòng",
+                        Placeholder = "12345, 12346, 12347"
+                    },
+                    new TaskParameter(DeleteOutputKey, "Thư mục lưu file", TaskParameterKind.Folder)
+                    {
+                        Hint = "file kết quả xoá theo danh sách",
+                        DefaultValue = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DataTool", "xoa-thua-khong-gian")
+                    }
+                },
                 Execute = SimulateDeleteAsync
             },
             new TaskDescriptor
@@ -31,28 +48,55 @@ namespace DataTool.App.Services
             }
         };
 
+        public const string DeleteCodesKey = "codes";
+        public const string DeleteOutputKey = "output_folder";
+
         private static async Task SimulateDeleteAsync(FakeTaskContext ctx)
         {
-            const int total = 250;
+            var codes = ctx.GetCodeList(DeleteCodesKey);
+            string folder = ctx.GetParameter(DeleteOutputKey);
+            Directory.CreateDirectory(folder);
+            string file = Path.Combine(folder, $"xoa_{ctx.Province.Id}_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
+
             ctx.Info($"Tỉnh {ctx.Province.DisplayName}: kết nối MongoDB...");
             await Task.Delay(600, ctx.CancellationToken);
-            ctx.Info($"Tìm thấy {total} thửa đất cần xoá dữ liệu không gian.");
+            ctx.Info($"Xoá dữ liệu không gian của {codes.Count} mã.");
 
-            for (int i = 1; i <= total; i++)
+            var result = new StringBuilder("ma,ket_qua,ghi_chu\r\n");
+            int deleted = 0, skipped = 0;
+            try
             {
-                ctx.CancellationToken.ThrowIfCancellationRequested();
-                await Task.Delay(25, ctx.CancellationToken);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    ctx.CancellationToken.ThrowIfCancellationRequested();
+                    await Task.Delay(120, ctx.CancellationToken);
 
-                if (i % 25 == 0)
-                    ctx.Info($"Đã xoá {i}/{total} thửa.");
-                if (i == 137)
-                    ctx.Warn("Thửa 137 không có dữ liệu không gian, bỏ qua.");
+                    // Giả lập: mã kết thúc bằng 0 coi như không có dữ liệu không gian
+                    if (codes[i].EndsWith("0"))
+                    {
+                        skipped++;
+                        ctx.Warn($"Mã {codes[i]}: không có dữ liệu không gian, bỏ qua.");
+                        result.Append(codes[i]).Append(",bo_qua,khong co du lieu khong gian\r\n");
+                    }
+                    else
+                    {
+                        deleted++;
+                        ctx.Info($"Mã {codes[i]}: đã xoá.");
+                        result.Append(codes[i]).Append(",da_xoa,\r\n");
+                    }
 
-                ctx.Report(i * 100.0 / total, $"Đang xoá thửa {i}/{total}");
+                    ctx.Report((i + 1) * 100.0 / codes.Count, $"Đang xoá {i + 1}/{codes.Count}");
+                }
+
+                ctx.Info($"Đồng bộ chỉ mục Solr ({ctx.Province.SolrKey})...");
+                await Task.Delay(500, ctx.CancellationToken);
             }
-
-            ctx.Info($"Đồng bộ chỉ mục Solr ({ctx.Province.SolrKey})...");
-            await Task.Delay(500, ctx.CancellationToken);
+            finally
+            {
+                // Luôn ghi file kết quả, kể cả khi bị huỷ giữa chừng
+                File.WriteAllText(file, result.ToString(), new UTF8Encoding(true));
+                ctx.Info($"Đã xoá {deleted}, bỏ qua {skipped}. File kết quả: {file}");
+            }
         }
 
         private static async Task SimulatePublishAsync(FakeTaskContext ctx)

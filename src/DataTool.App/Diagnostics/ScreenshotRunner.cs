@@ -72,13 +72,20 @@ namespace DataTool.App.Diagnostics
                 var delete = group.Children.First(n => n.Task != null && n.Task.IsDangerous);
                 delete.IsSelected = true;
                 await Settle(600);
+                var deleteRun = vm.CurrentTask;
+                deleteRun.RunCommand.Execute(null); // chưa nhập mã -> báo lỗi dưới ô
+                await Settle(500);
+                Save(main, outputFolder, "03a-tac-vu-xoa-thieu-thong-tin.png");
+
+                deleteRun.Parameters.First(p => p.Kind == DataTool.Core.Tasks.TaskParameterKind.CodeList).Value =
+                    "12345, 12346, 12347,12348\r\n12350;12351 12345";
+                await Settle(500);
                 Save(main, outputFolder, "03-tac-vu-xoa.png");
 
                 var province = vm.SelectedProvince;
                 var dialog = ConfirmDialog.Create(
                     "Xác nhận thao tác xoá",
-                    $"Tác vụ \"{delete.Title}\" sẽ thay đổi dữ liệu và không thể hoàn tác.\n\n" +
-                    $"Tỉnh: {province.DisplayName} ({province.Id})\nSolr key: {province.SolrKey}",
+                    deleteRun.BuildConfirmMessage(province),
                     DialogKind.Danger, "Chạy tác vụ", "Huỷ", province.DisplayName);
                 dialog.WindowStartupLocation = WindowStartupLocation.Manual;
                 dialog.Left = 100;

@@ -2,12 +2,41 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:controls="clr-namespace:DataTool.UI.Controls;assembly=DataTool.UI.Controls">
+             xmlns:controls="clr-namespace:DataTool.UI.Controls;assembly=DataTool.UI.Controls"
+             xmlns:tasks="clr-namespace:DataTool.Core.Tasks;assembly=DataTool.Core">
+    <UserControl.Resources>
+        <!-- Mỗi loại tham số một mẫu giao diện; thêm loại mới chỉ cần thêm DataTemplate -->
+        <DataTemplate x:Key="Param.Text">
+            <controls:FormField Label="{Binding Label}" Hint="{Binding Hint}" Placeholder="{Binding Placeholder}"
+                                Text="{Binding Value}" Error="{Binding Error}" UseMonospace="False" />
+        </DataTemplate>
+        <DataTemplate x:Key="Param.CodeList">
+            <controls:FormField Label="{Binding Label}" Hint="{Binding Hint}" Placeholder="{Binding Placeholder}"
+                                Text="{Binding Value}" Footer="{Binding Summary}" Error="{Binding Error}"
+                                IsMultiline="True" />
+        </DataTemplate>
+        <DataTemplate x:Key="Param.Folder">
+            <StackPanel Margin="0,0,0,10">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="{Binding Label}" FontSize="12"
+                               FontFamily="{StaticResource DT.Font.Mono}"
+                               Foreground="{StaticResource DT.Brush.Primary}" />
+                    <TextBlock Text="{Binding Hint}" Margin="8,0,0,0" FontSize="12"
+                               Foreground="{StaticResource DT.Brush.TextSecondary}" />
+                </StackPanel>
+                <controls:PathBox Path="{Binding Value}" BrowseText="Chọn thư mục" BrowseCommand="{Binding BrowseCommand}" />
+                <TextBlock Text="{Binding Error}" Margin="2,4,0,0" FontSize="12"
+                           Foreground="{StaticResource DT.Brush.Danger}"
+                           Visibility="{Binding Error, Converter={StaticResource NullToVisibility}}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid Margin="28,24,28,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" MinHeight="140" />
         </Grid.RowDefinitions>
 
         <!-- Tiêu đề tác vụ -->
@@ -40,8 +69,36 @@
                        Foreground="{StaticResource DT.Brush.TextSecondary}" />
         </StackPanel>
 
+        <!-- Tham số đầu vào (tự sinh theo khai báo của tác vụ) -->
+        <controls:SectionCard Grid.Row="1" Margin="0,20,0,0"
+                              Header="Thông tin đầu vào" Icon="TextBoxEditOutline"
+                              IsEnabled="{Binding IsIdle}"
+                              Visibility="{Binding HasParameters, Converter={StaticResource BoolToVisibility}}">
+            <ItemsControl ItemsSource="{Binding Parameters}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{Binding}" Focusable="False">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Param.Text}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Kind}" Value="{x:Static tasks:TaskParameterKind.CodeList}">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource Param.CodeList}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Kind}" Value="{x:Static tasks:TaskParameterKind.Folder}">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource Param.Folder}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </controls:SectionCard>
+
         <!-- Khối điều khiển -->
-        <Border Grid.Row="1" Margin="0,20,0,16" Style="{StaticResource DT.Card}">
+        <Border Grid.Row="2" Margin="0,16,0,16" Style="{StaticResource DT.Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -101,7 +158,7 @@
         </Border>
 
         <!-- Khung log -->
-        <controls:LogViewer Grid.Row="2"
+        <controls:LogViewer Grid.Row="3"
                             ItemsSource="{Binding Logs}"
                             EmptyText="Chưa có log. Nhấn Chạy để bắt đầu.">
             <controls:LogViewer.HeaderContent>
