@@ -98,6 +98,7 @@
 
                     <Grid>
                         <ListBox ItemsSource="{Binding ProvincesView}"
+                                 Cursor="Hand"
                                  SelectedItem="{Binding Selected}"
                                  HorizontalContentAlignment="Stretch"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">

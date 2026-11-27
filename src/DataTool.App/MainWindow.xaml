@@ -106,51 +106,56 @@
 
                 <!-- Menu tác vụ -->
                 <Border Grid.Column="0" Background="{StaticResource DT.Brush.Surface}">
-                    <DockPanel Margin="12,16,8,12">
-                        <TextBlock DockPanel.Dock="Top"
-                                   Text="TÁC VỤ"
-                                   Margin="8,0,0,10"
-                                   Style="{StaticResource DT.Text.Overline}" />
+                    <DockPanel Margin="12,14,12,12">
                         <TextBox DockPanel.Dock="Top"
-                                 Margin="4,0,4,10"
+                                 Margin="4,0,4,8"
                                  Text="{Binding MenuFilter, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:HintAssist.Hint="Tìm tác vụ"
                                  materialDesign:TextFieldAssist.HasClearButton="True"
                                  materialDesign:TextFieldAssist.HasLeadingIcon="True"
                                  materialDesign:TextFieldAssist.LeadingIcon="Magnify" />
                         <TreeView x:Name="MenuTree"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  Style="{StaticResource DT.NavTree}"
                                   ItemsSource="{Binding Menu}"
                                   SelectedItemChanged="OnMenuSelectedItemChanged">
                             <TreeView.ItemContainerStyle>
-                                <Style TargetType="TreeViewItem" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
+                                <Style TargetType="TreeViewItem" BasedOn="{StaticResource DT.NavTreeItem}">
                                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                                     <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}" />
-                                    <Setter Property="Padding" Value="6,6" />
-                                    <Setter Property="Cursor" Value="Hand" />
                                 </Style>
                             </TreeView.ItemContainerStyle>
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type vm:MenuNodeViewModel}" ItemsSource="{Binding Children}">
-                                    <StackPanel Orientation="Horizontal">
+                                    <DockPanel>
                                         <materialDesign:PackIcon x:Name="NodeIcon"
+                                                                 DockPanel.Dock="Left"
                                                                  Kind="{Binding Icon}"
                                                                  Width="18" Height="18"
+                                                                 Margin="0,0,12,0"
                                                                  VerticalAlignment="Center"
                                                                  Foreground="{StaticResource DT.Brush.TextSecondary}" />
                                         <TextBlock x:Name="NodeText"
-                                                   Margin="10,0,0,0"
                                                    VerticalAlignment="Center"
+                                                   FontSize="13.5"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding Title}"
                                                    Text="{Binding Title}" />
-                                    </StackPanel>
+                                    </DockPanel>
                                     <HierarchicalDataTemplate.Triggers>
+                                        <!-- Nhóm: tiêu đề nhỏ, in đậm, màu phụ (kiểu mục lục) -->
                                         <DataTrigger Binding="{Binding IsTask}" Value="False">
-                                            <Setter TargetName="NodeText" Property="FontWeight" Value="SemiBold" />
-                                            <Setter TargetName="NodeIcon" Property="Foreground" Value="{StaticResource DT.Brush.Primary}" />
+                                            <Setter TargetName="NodeIcon" Property="Visibility" Value="Collapsed" />
+                                            <Setter TargetName="NodeText" Property="FontSize" Value="11" />
+                                            <Setter TargetName="NodeText" Property="FontWeight" Value="Bold" />
+                                            <Setter TargetName="NodeText" Property="Foreground" Value="{StaticResource DT.Brush.TextSecondary}" />
+                                            <Setter TargetName="NodeText" Property="ToolTip" Value="{x:Null}" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding Task.IsDangerous}" Value="True">
                                             <Setter TargetName="NodeIcon" Property="Foreground" Value="{StaticResource DT.Brush.Danger}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter TargetName="NodeText" Property="FontWeight" Value="SemiBold" />
                                         </DataTrigger>
                                     </HierarchicalDataTemplate.Triggers>
                                 </HierarchicalDataTemplate>

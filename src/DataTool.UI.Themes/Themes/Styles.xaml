@@ -104,16 +104,6 @@
     <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
         <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <!-- Đặt trên cả danh sách vì một số style Material tự gán ItemContainerStyle riêng -->
-    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
         <Setter Property="Cursor" Value="Hand" />
     </Style>
@@ -122,6 +112,93 @@
         <Setter Property="LayoutTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="0.75" ScaleY="0.75" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===== Thanh điều hướng dạng cây (menu tác vụ) ===== -->
+    <Style x:Key="DT.NavTree" TargetType="TreeView">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TreeView">
+                    <ScrollViewer Focusable="False" CanContentScroll="False"
+                                  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ItemsPresenter Margin="{TemplateBinding Padding}" />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DT.NavTreeItem" TargetType="TreeViewItem">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextPrimary}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TreeViewItem">
+                    <StackPanel>
+                        <Border x:Name="Row" CornerRadius="6" Margin="0,1" Background="Transparent"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter ContentSource="Header" VerticalAlignment="Center" />
+                                <materialDesign:PackIcon x:Name="Chevron" Grid.Column="1" Kind="ChevronDown"
+                                                         Width="16" Height="16" VerticalAlignment="Center"
+                                                         Foreground="{StaticResource DT.Brush.TextSecondary}" />
+                                <!-- Nhóm: bấm cả dòng để mở/đóng -->
+                                <ToggleButton x:Name="Expander" Grid.ColumnSpan="2" Margin="-10,-10,-10,-4"
+                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                              Cursor="Hand" Focusable="False">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+                        <ItemsPresenter x:Name="ItemsHost" Margin="0,0,0,8" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter TargetName="Expander" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Chevron" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="Row" Property="Padding" Value="10,10,10,4" />
+                        </Trigger>
+                        <Trigger Property="IsExpanded" Value="False">
+                            <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Chevron" Property="Kind" Value="ChevronRight" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition SourceName="Row" Property="IsMouseOver" Value="True" />
+                                <Condition Property="HasItems" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource DT.Brush.Background}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="HasItems" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource DT.Brush.PrimaryLight}" />
+                            <Setter Property="Foreground" Value="{StaticResource DT.Brush.Primary}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>

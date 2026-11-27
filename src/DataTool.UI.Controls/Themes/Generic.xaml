@@ -55,12 +55,12 @@
                         <Trigger Property="Footer" Value="">
                             <Setter TargetName="FooterText" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        <DataTrigger Binding="{Binding Error, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource DT.Internal.HasText}}" Value="True">
+                        <Trigger Property="HasError" Value="True">
                             <Setter TargetName="FooterText" Property="Visibility" Value="Visible" />
                             <Setter TargetName="FooterText" Property="Text" Value="{Binding Error, RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter TargetName="FooterText" Property="Foreground" Value="{DynamicResource DT.Brush.Danger}" />
                             <Setter TargetName="PART_TextBox" Property="BorderBrush" Value="{DynamicResource DT.Brush.Danger}" />
-                        </DataTrigger>
+                        </Trigger>
                         <Trigger Property="UseMonospace" Value="False">
                             <Setter TargetName="PART_TextBox" Property="FontFamily" Value="{DynamicResource DT.Font.Ui}" />
                         </Trigger>

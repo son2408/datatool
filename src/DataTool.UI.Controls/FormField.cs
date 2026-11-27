@@ -40,7 +40,15 @@ namespace DataTool.UI.Controls
             DependencyProperty.Register(nameof(Footer), typeof(string), typeof(FormField), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ErrorProperty =
-            DependencyProperty.Register(nameof(Error), typeof(string), typeof(FormField), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Error), typeof(string), typeof(FormField),
+                new PropertyMetadata(null, (d, e) => d.SetValue(HasErrorPropertyKey, !string.IsNullOrWhiteSpace(e.NewValue as string))));
+
+        private static readonly DependencyPropertyKey HasErrorPropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(HasError), typeof(bool), typeof(FormField), new PropertyMetadata(false));
+
+        public static readonly DependencyProperty HasErrorProperty = HasErrorPropertyKey.DependencyProperty;
+
+        public bool HasError => (bool)GetValue(HasErrorProperty);
 
         /// <summary>Ô nhập nhiều dòng (cao hơn, cho xuống dòng, có thanh cuộn).</summary>
         public bool IsMultiline
