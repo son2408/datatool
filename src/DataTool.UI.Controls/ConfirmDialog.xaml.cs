@@ -31,8 +31,7 @@ namespace DataTool.UI.Controls
             string cancelText = "Huỷ",
             string requiredText = null)
         {
-            var dialog = new ConfirmDialog();
-            dialog.Configure(title, message, kind, confirmText, cancelText, requiredText);
+            var dialog = Create(title, message, kind, confirmText, cancelText, requiredText);
 
             var resolvedOwner = owner ?? FindActiveWindow();
             if (resolvedOwner != null && resolvedOwner != dialog && resolvedOwner.IsVisible)
@@ -41,6 +40,18 @@ namespace DataTool.UI.Controls
                 dialog.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             return dialog.ShowDialog() == true;
+        }
+
+        /// <summary>Tạo hộp thoại đã cấu hình nhưng chưa hiển thị (dùng khi cần Show không chặn, ví dụ chụp ảnh).</summary>
+        public static ConfirmDialog Create(string title, string message,
+            DialogKind kind = DialogKind.Question,
+            string confirmText = "Đồng ý",
+            string cancelText = "Huỷ",
+            string requiredText = null)
+        {
+            var dialog = new ConfirmDialog();
+            dialog.Configure(title, message, kind, confirmText, cancelText, requiredText);
+            return dialog;
         }
 
         /// <summary>Hộp thoại chỉ có nút Đóng.</summary>

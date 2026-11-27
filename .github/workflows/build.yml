@@ -16,3 +16,19 @@ jobs:
         run: dotnet restore DataTool.sln
       - name: Build
         run: dotnet build DataTool.sln -c Release --no-restore
+      - name: Chụp ảnh giao diện
+        shell: pwsh
+        timeout-minutes: 3
+        run: |
+          $exe = "src/DataTool.App/bin/Release/net48/DataTool.exe"
+          $p = Start-Process -FilePath $exe -ArgumentList "--screenshots", "$PWD/screenshots" -PassThru -Wait
+          Get-ChildItem screenshots
+          if (Test-Path screenshots/error.txt) { Get-Content screenshots/error.txt; exit 1 }
+          if ($p.ExitCode -ne 0) { Write-Error "DataTool.exe thoát với mã $($p.ExitCode)"; exit 1 }
+      - name: Tải ảnh lên
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots/
+          if-no-files-found: ignore

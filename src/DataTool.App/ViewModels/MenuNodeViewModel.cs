@@ -36,6 +36,14 @@ namespace DataTool.App.ViewModels
             set => SetProperty(ref _isExpanded, value);
         }
 
+        private bool _isSelected;
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
+
         public bool IsVisible
         {
             get => _isVisible;
