@@ -15,5 +15,6 @@
     <ProjectReference Include="..\DataTool.Configuration\DataTool.Configuration.csproj" />
     <ProjectReference Include="..\DataTool.UI.Themes\DataTool.UI.Themes.csproj" />
     <ProjectReference Include="..\DataTool.UI.Controls\DataTool.UI.Controls.csproj" />
+    <ProjectReference Include="D:\Thaison\2020\VDMSDataHelper\VDMSDataHelper\VDMSDataHelper.csproj" />
   </ItemGroup>
 </Project>
