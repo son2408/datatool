@@ -9,8 +9,9 @@
 | `DataTool.UI.Themes` | Theme dùng chung (màu, font, style) dựa trên MaterialDesignInXamlToolkit. Nạp bằng `Themes/Theme.xaml`. |
 | `DataTool.UI.Controls` | Control dùng lại: `LogViewer`, `ProgressPanel`, `EnvironmentBadge`, `ConnectionStatusIndicator`, `ConfirmDialog`, `PasswordBoxHelper`, converter. |
 | `DataTool.App` | Ứng dụng WPF (MVVM, CommunityToolkit.Mvvm). |
+| `DataTool.Core` | ITask, TaskBase, TaskRegistry (tự quét tác vụ), TaskRunner (chạy nền, huỷ, ghi log file), model môi trường. netstandard2.0, không phụ thuộc giao diện. |
 
-Sắp thêm: `DataTool.Core`, `DataTool.Configuration`, `DataTool.VBDLIS`, `DataTool.ConsoleDemo`.
+Sắp thêm: `DataTool.Configuration`, `DataTool.VBDLIS`, `DataTool.ConsoleDemo`.
 
 ## Trạng thái
 
