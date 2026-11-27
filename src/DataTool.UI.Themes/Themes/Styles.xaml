@@ -1,0 +1,237 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <!-- Gộp sẵn style mặc định của Material Design để các style bên dưới dùng BasedOn được -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/DataTool.UI.Themes;component/Themes/Colors.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Cửa sổ -->
+    <Style x:Key="DT.Window" TargetType="Window">
+        <Setter Property="Background" Value="{StaticResource DT.Brush.Background}" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextPrimary}" />
+        <Setter Property="FontFamily" Value="{StaticResource DT.Font.Ui}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <!-- Chữ -->
+    <Style x:Key="DT.Text.PageTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextPrimary}" />
+    </Style>
+    <Style x:Key="DT.Text.SectionTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextPrimary}" />
+    </Style>
+    <Style x:Key="DT.Text.Body" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextPrimary}" />
+    </Style>
+    <Style x:Key="DT.Text.Caption" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextSecondary}" />
+    </Style>
+    <Style x:Key="DT.Text.Overline" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextSecondary}" />
+    </Style>
+
+    <!-- Thẻ (card) phẳng có viền mảnh -->
+    <Style x:Key="DT.Card" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource DT.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DT.Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="20" />
+    </Style>
+
+    <!-- Nút -->
+    <Style x:Key="DT.Button.Primary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6" />
+    </Style>
+    <Style x:Key="DT.Button.Danger" TargetType="Button" BasedOn="{StaticResource DT.Button.Primary}">
+        <Setter Property="Background" Value="{StaticResource DT.Brush.Danger}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DT.Brush.Danger}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style x:Key="DT.Button.Secondary" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6" />
+    </Style>
+    <Style x:Key="DT.Button.Text" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="10,0" />
+    </Style>
+    <Style x:Key="DT.Button.Icon" TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+
+    <!-- Con trỏ bàn tay cho mọi thành phần bấm được (style ngầm định, kế thừa style Material Design) -->
+    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style x:Key="DT.Switch.Small" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="LayoutTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="0.75" ScaleY="0.75" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===== Thanh điều hướng dạng cây (menu tác vụ) ===== -->
+    <Style x:Key="DT.NavTree" TargetType="TreeView">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TreeView">
+                    <ScrollViewer Focusable="False" CanContentScroll="False"
+                                  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ItemsPresenter Margin="{TemplateBinding Padding}" />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DT.NavTreeItem" TargetType="TreeViewItem">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextPrimary}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TreeViewItem">
+                    <StackPanel>
+                        <Border x:Name="Row" CornerRadius="6" Margin="0,1" Background="Transparent"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter ContentSource="Header" VerticalAlignment="Center" />
+                                <materialDesign:PackIcon x:Name="Chevron" Grid.Column="1" Kind="ChevronDown"
+                                                         Width="16" Height="16" VerticalAlignment="Center"
+                                                         Foreground="{StaticResource DT.Brush.TextSecondary}" />
+                                <!-- Nhóm: bấm cả dòng để mở/đóng -->
+                                <ToggleButton x:Name="Expander" Grid.ColumnSpan="2" Margin="-10,-10,-10,-4"
+                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                              Cursor="Hand" Focusable="False">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="Transparent" />
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+                        <ItemsPresenter x:Name="ItemsHost" Margin="0,0,0,8" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter TargetName="Expander" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Chevron" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="Row" Property="Padding" Value="10,10,10,4" />
+                        </Trigger>
+                        <Trigger Property="IsExpanded" Value="False">
+                            <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Chevron" Property="Kind" Value="ChevronRight" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition SourceName="Row" Property="IsMouseOver" Value="True" />
+                                <Condition Property="HasItems" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource DT.Brush.Background}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="HasItems" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource DT.Brush.PrimaryLight}" />
+                            <Setter Property="Foreground" Value="{StaticResource DT.Brush.Primary}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Ô nhập liệu trong form -->
+    <Style x:Key="DT.Field.TextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+        <Setter Property="Margin" Value="0,0,0,14" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.85" />
+    </Style>
+    <Style x:Key="DT.Field.PasswordBox" TargetType="PasswordBox" BasedOn="{StaticResource MaterialDesignOutlinedPasswordBox}">
+        <Setter Property="Margin" Value="0,0,0,14" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.85" />
+    </Style>
+    <Style x:Key="DT.Field.ComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Margin" Value="0,0,0,14" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.85" />
+    </Style>
+
+    <!-- Ô nhập có nhãn đặt phía trên (không dùng nhãn nổi), chữ đơn cách cho chuỗi kết nối -->
+    <Style x:Key="DT.Field.Code" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+        <Setter Property="FontFamily" Value="{StaticResource DT.Font.Mono}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="DT.Field.Label" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="Foreground" Value="{StaticResource DT.Brush.TextSecondary}" />
+    </Style>
+</ResourceDictionary>

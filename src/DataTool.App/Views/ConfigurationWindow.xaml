@@ -1,0 +1,284 @@
+<Window x:Class="DataTool.App.Views.ConfigurationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:DataTool.UI.Controls;assembly=DataTool.UI.Controls"
+        Title="DataTool"
+        Width="1180" Height="820"
+        MinWidth="900" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Closing="OnClosing"
+        Style="{StaticResource DT.Window}">
+
+    <DockPanel>
+        <!-- ===== Thư mục cấu hình ===== -->
+        <Border DockPanel.Dock="Top"
+                Background="{StaticResource DT.Brush.Surface}"
+                BorderBrush="{StaticResource DT.Brush.Border}"
+                BorderThickness="0,0,0,1"
+                Padding="20,10">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left" Text="Thư mục cấu hình" Style="{StaticResource DT.Text.Caption}"
+                           VerticalAlignment="Center" Margin="0,0,12,0" />
+                <Button DockPanel.Dock="Right" Margin="8,0,0,0"
+                        Command="{Binding ReloadCommand}"
+                        ToolTip="Tải lại danh sách tỉnh"
+                        Style="{StaticResource DT.Button.Icon}">
+                    <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" />
+                </Button>
+                <controls:PathBox Path="{Binding Folder}"
+                                  BrowseText="Đổi thư mục"
+                                  BrowseCommand="{Binding ChangeFolderCommand}"
+                                  MaxWidth="760" HorizontalAlignment="Left" />
+            </DockPanel>
+        </Border>
+
+        <!-- ===== Thanh dưới cùng ===== -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{StaticResource DT.Brush.Surface}"
+                BorderBrush="{StaticResource DT.Brush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,10">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Content="Bỏ thay đổi" MinWidth="110" Margin="0,0,10,0"
+                            Command="{Binding DiscardCommand}"
+                            Style="{StaticResource DT.Button.Secondary}" />
+                    <Button MinWidth="100" Command="{Binding SaveCommand}" Style="{StaticResource DT.Button.Primary}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSaveOutline" Width="18" Height="18" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Lưu" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                            Visibility="{Binding Selected.IsDirty, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource DT.Brush.Warning}" VerticalAlignment="Center" />
+                    <TextBlock Margin="8,0,0,0" Text="Có thay đổi chưa lưu" Foreground="{StaticResource DT.Brush.Warning}" VerticalAlignment="Center" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ===== Danh sách tỉnh ===== -->
+            <Border Grid.Column="0"
+                    Background="{StaticResource DT.Brush.Surface}"
+                    BorderBrush="{StaticResource DT.Brush.Border}"
+                    BorderThickness="0,0,1,0">
+                <DockPanel Margin="12,14,12,12">
+                    <DockPanel DockPanel.Dock="Top" Margin="6,0,0,6">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Command="{Binding AddCommand}" ToolTip="Thêm tỉnh (tạo file .yml mới)" Style="{StaticResource DT.Button.Icon}">
+                                <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" />
+                            </Button>
+                            <Button Command="{Binding DuplicateCommand}" ToolTip="Nhân bản tỉnh đang chọn" Style="{StaticResource DT.Button.Icon}">
+                                <materialDesign:PackIcon Kind="ContentDuplicate" Width="18" Height="18" />
+                            </Button>
+                            <Button Command="{Binding DeleteCommand}" ToolTip="Xoá tỉnh đang chọn" Style="{StaticResource DT.Button.Icon}"
+                                    Foreground="{StaticResource DT.Brush.Danger}">
+                                <materialDesign:PackIcon Kind="DeleteOutline" Width="18" Height="18" />
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Text="{Binding CountText}" Style="{StaticResource DT.Text.Overline}" VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <TextBox DockPanel.Dock="Top"
+                             Margin="4,0,4,10"
+                             Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="Tìm theo mã tỉnh"
+                             materialDesign:TextFieldAssist.HasClearButton="True"
+                             materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                             materialDesign:TextFieldAssist.LeadingIcon="Magnify" />
+
+                    <Grid>
+                        <ListBox ItemsSource="{Binding ProvincesView}"
+                                 Cursor="Hand"
+                                 SelectedItem="{Binding Selected}"
+                                 HorizontalContentAlignment="Stretch"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <!-- Nút tròn: tỉnh đang dùng (chỉ một) -->
+                                        <Grid Width="16" Height="16" VerticalAlignment="Center">
+                                            <Ellipse x:Name="Ring" Stroke="{StaticResource DT.Brush.TextSecondary}" StrokeThickness="2" />
+                                            <Ellipse x:Name="Dot" Width="8" Height="8" Fill="{StaticResource DT.Brush.Success}" Visibility="Collapsed" />
+                                        </Grid>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" />
+                                            <TextBlock x:Name="DirtyMark" Text=" •" FontWeight="Bold" FontSize="14"
+                                                       Foreground="{StaticResource DT.Brush.Warning}" Visibility="Collapsed"
+                                                       ToolTip="Có thay đổi chưa lưu" />
+                                        </StackPanel>
+                                        <Border x:Name="ActiveChip" Grid.Column="2" CornerRadius="9" Padding="7,1"
+                                                Background="{StaticResource DT.Brush.Success}" VerticalAlignment="Center"
+                                                Visibility="Collapsed">
+                                            <TextBlock Text="ĐANG DÙNG" FontSize="10" FontWeight="Bold" Foreground="White" />
+                                        </Border>
+                                    </Grid>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter TargetName="Ring" Property="Stroke" Value="{StaticResource DT.Brush.Success}" />
+                                            <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                                            <Setter TargetName="ActiveChip" Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                            <Setter TargetName="DirtyMark" Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <TextBlock Margin="8,20" TextWrapping="Wrap" TextAlignment="Center"
+                                   Style="{StaticResource DT.Text.Caption}"
+                                   Text="Thư mục chưa có file .yml nào. Bấm + để thêm, hoặc Đổi thư mục."
+                                   Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}" />
+                    </Grid>
+                </DockPanel>
+            </Border>
+
+            <!-- ===== Chi tiết tỉnh ===== -->
+            <DockPanel Grid.Column="1"
+                       DataContext="{Binding Selected}"
+                       Visibility="{Binding Converter={StaticResource NullToVisibility}}">
+                <!-- Tiêu đề + nút thao tác: ghim cố định, không cuộn theo nội dung -->
+                <Border DockPanel.Dock="Top" Padding="28,14,28,10">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Margin="0,0,10,0" Height="32"
+                                    ToolTip="{Binding FilePath}"
+                                    Style="{StaticResource DT.Button.Secondary}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="FileDocumentOutline" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="Mở file" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding DataContext.UseCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Height="32">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource DT.Button.Primary}">
+                                        <Setter Property="Background" Value="{StaticResource DT.Brush.Success}" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource DT.Brush.Success}" />
+                                    </Style>
+                                </Button.Style>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Check" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Dùng cấu hình này" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                        <Setter Property="Text" Value="Đang dùng" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Text="{Binding DisplayName}" Style="{StaticResource DT.Text.PageTitle}" VerticalAlignment="Center" />
+                    </DockPanel>
+                </Border>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="28,4,28,20">
+                        <controls:SectionCard Header="Chung" Icon="CogOutline">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <controls:FormField Grid.Column="0" Label="service_key" Hint="Mã tỉnh"
+                                                    Text="{Binding ServiceKey}" />
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="repository_backend" Margin="0,0,0,4" FontSize="12"
+                                               FontFamily="{StaticResource DT.Font.Mono}"
+                                               Foreground="{StaticResource DT.Brush.Primary}" />
+                                    <ComboBox IsEditable="True"
+                                              ItemsSource="{Binding RepositoryBackendOptions}"
+                                              Text="{Binding RepositoryBackend, UpdateSourceTrigger=PropertyChanged}"
+                                              FontFamily="{StaticResource DT.Font.Mono}"
+                                              Padding="10,7" Margin="0,0,0,10"
+                                              Style="{StaticResource DT.Field.ComboBox}" />
+                                </StackPanel>
+                            </Grid>
+                        </controls:SectionCard>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <controls:SectionCard Grid.Column="0" Header="Solr" Icon="TextBoxSearchOutline">
+                                <StackPanel>
+                                    <controls:FormField Label="solr_uri" Text="{Binding SolrUri}" />
+                                    <controls:FormField Label="solr_key" Text="{Binding SolrKey}" />
+                                </StackPanel>
+                            </controls:SectionCard>
+                            <controls:SectionCard Grid.Column="2" Header="RabbitMQ" Icon="Rabbit">
+                                <StackPanel>
+                                    <controls:FormField Label="rabbit_uri" Text="{Binding RabbitUri}" />
+                                    <controls:FormField Label="repo_endpoint" Hint="Service clients" Text="{Binding RepoEndpoint}" />
+                                    <controls:SwitchField Label="is_new_repo" IsChecked="{Binding IsNewRepo}" />
+                                </StackPanel>
+                            </controls:SectionCard>
+                        </Grid>
+
+                        <controls:SectionCard Header="MongoDB" Icon="DatabaseOutline">
+                            <StackPanel>
+                                <controls:FormField Label="vdms_connection_string" Text="{Binding VdmsConnectionString}" />
+                                <controls:FormField Label="log_connection_string" Text="{Binding LogConnectionString}" />
+                            </StackPanel>
+                        </controls:SectionCard>
+
+                        <controls:SectionCard Header="VDFS" Icon="FolderNetworkOutline">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <controls:FormField Grid.Row="0" Grid.Column="0" Label="vdfs_api_endpoint" Text="{Binding VdfsApiEndpoint}" />
+                                <controls:FormField Grid.Row="0" Grid.Column="2" Label="vdfs_tag" Text="{Binding VdfsTag}" />
+                                <controls:FormField Grid.Row="1" Grid.Column="0" Label="vdfs_rabbit_uri" Text="{Binding VdfsRabbitUri}" />
+                                <controls:FormField Grid.Row="1" Grid.Column="2" Label="vdfs_exchange" Text="{Binding VdfsExchange}" />
+                            </Grid>
+                        </controls:SectionCard>
+
+                        <controls:SectionCard Header="Khác" Icon="DotsHorizontal" Margin="0"
+                                              Visibility="{Binding HasExtraFields, Converter={StaticResource BoolToVisibility}}">
+                            <ItemsControl ItemsSource="{Binding ExtraFields}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <controls:FormField Label="{Binding Key}" Text="{Binding Value}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </controls:SectionCard>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

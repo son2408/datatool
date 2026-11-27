@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>DataTool.UI.Themes</RootNamespace>
+    <Description>Bộ theme dùng chung (màu, font, style) dựa trên MaterialDesignInXamlToolkit.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+<UserControl x:Class="DataTool.UI.Controls.ConnectionStatusIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             VerticalAlignment="Center">
+    <StackPanel Orientation="Horizontal">
+        <ProgressBar x:Name="Spinner"
+                     Width="16" Height="16"
+                     Margin="0,0,8,0"
+                     IsIndeterminate="True"
+                     Visibility="Collapsed"
+                     Style="{DynamicResource MaterialDesignCircularProgressBar}" />
+        <materialDesign:PackIcon x:Name="StateIcon"
+                                 Width="18" Height="18"
+                                 Margin="0,0,6,0"
+                                 VerticalAlignment="Center"
+                                 Visibility="Collapsed" />
+        <TextBlock x:Name="MessageText"
+                   VerticalAlignment="Center"
+                   TextWrapping="Wrap"
+                   MaxWidth="420"
+                   FontSize="12" />
+    </StackPanel>
+</UserControl>

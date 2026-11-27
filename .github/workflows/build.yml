@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      screenshots:
+        description: "Chụp ảnh giao diện"
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      # Build qua project App (kéo theo các project khác) thay vì .sln,
+      # vì .sln có project VDMSDataHelper nằm ngoài repo (chỉ có trên máy dev)
+      - name: Restore
+        run: dotnet restore src/DataTool.App/DataTool.App.csproj
+      - name: Build
+        run: dotnet build src/DataTool.App/DataTool.App.csproj -c Release --no-restore
+      # Chỉ chụp ảnh khi chạy thủ công hoặc commit có chữ [screenshots]; ảnh giữ 1 ngày rồi tự xoá
+      - name: Chụp ảnh giao diện
+        if: (github.event_name == 'workflow_dispatch' && inputs.screenshots) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[screenshots]'))
+        shell: pwsh
+        timeout-minutes: 3
+        run: |
+          $exe = "src/DataTool.App/bin/Release/net48/DataTool.exe"
+          $p = Start-Process -FilePath $exe -ArgumentList "--screenshots", "$PWD/screenshots" -PassThru -Wait
+          Get-ChildItem screenshots
+          if (Test-Path screenshots/error.txt) { Get-Content screenshots/error.txt; exit 1 }
+          if ($p.ExitCode -ne 0) { Write-Error "DataTool.exe thoát với mã $($p.ExitCode)"; exit 1 }
+      - name: Tải ảnh lên
+        if: always() && ((github.event_name == 'workflow_dispatch' && inputs.screenshots) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[screenshots]')))
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots/
+          if-no-files-found: ignore
+          retention-days: 1
